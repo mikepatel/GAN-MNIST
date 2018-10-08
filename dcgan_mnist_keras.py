@@ -224,4 +224,23 @@ def train():
         # save checkpoints
 
         # tensorboard
-        
+
+
+################################################################################
+# plot
+def plot_output():
+    t = np.random.rand(10, 100)
+    preds = gen.predict(t)
+
+    plt.figure(figsize=(10, 10))
+
+    for i in range(preds.shape[0]):
+        plt.subplot(10, 10, i+1)
+        plt.imshow(preds[i, :, :, 0], cmap="gray")
+        plt.axis("off")
+    plt.show()
+
+
+################################################################################
+train()
+plot_output()
