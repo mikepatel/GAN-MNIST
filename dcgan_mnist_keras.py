@@ -20,7 +20,7 @@ from tensorflow.keras.datasets import mnist
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, Conv2DTranspose, \
     BatchNormalization, Dropout, Flatten, LeakyReLU, Reshape
-from tensorflow.keras.activations import relu, softmax
+from tensorflow.keras.activations import relu, softmax, sigmoid
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
@@ -52,7 +52,8 @@ train_dataset = train_dataset.batch(BATCH_SIZE)
 
 
 ################################################################################
-def build_gen():
+# generator
+def build_generator():
     m = Sequential()
 
     m.add(Dense(
@@ -94,5 +95,64 @@ def build_gen():
     ))
 
     m.summary()
+    return m
 
 
+################################################################################
+# discriminator
+def build_discriminator():
+    m = Sequential()
+
+    m.add(Conv2D(
+        filters=32,
+        kernel_size=[5, 5],
+        input_shape=(28, 28, 1),
+        padding="same",
+        activation=LeakyReLU(0.1)
+    ))
+
+    m.add(BatchNormalization())
+
+    m.add(MaxPool2D(
+        pool_size=[2, 2],
+        strides=2
+    ))
+
+    m.add(Conv2D(
+        filters=64,
+        kernel_size=[5, 5],
+        padding="same",
+        activation=LeakyReLU(0.1)
+    ))
+
+    m.add(BatchNormalization())
+
+    m.add(MaxPool2D(
+        pool_size=[2, 2],
+        strides=2
+    ))
+
+    m.add(Conv2D(
+        filters=128,
+        kernel_size=[5, 5],
+        padding="same",
+        activation=LeakyReLU(0.1)
+    ))
+
+    m.add(Flatten())
+
+    m.add(Dense(
+        units=128,
+        activation=LeakyReLU(0.1)
+    ))
+
+    m.add(Dense(
+        units=1,
+        activation=sigmoid
+    ))
+
+    m.summary()
+    return m
+
+
+################################################################################
