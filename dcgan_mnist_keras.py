@@ -17,10 +17,11 @@ from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
 from tensorflow.keras.datasets import mnist
-from tensorflow.keras import Sequential
+from tensorflow.keras import Sequential, Model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, Conv2DTranspose, \
-    BatchNormalization, Dropout, Flatten, LeakyReLU, Reshape
+    BatchNormalization, Dropout, Flatten, LeakyReLU, Reshape, Input
 from tensorflow.keras.activations import relu, softmax, sigmoid
+from tensorflow.keras.losses import sparse_categorical_crossentropy
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
@@ -94,6 +95,11 @@ def build_generator():
         activation=LeakyReLU(0.1)
     ))
 
+    m.compile(
+        loss=sparse_categorical_crossentropy,
+        optimizer=Adam()
+    )
+
     m.summary()
     return m
 
@@ -151,8 +157,37 @@ def build_discriminator():
         activation=sigmoid
     ))
 
+    m.compile(
+        loss=sparse_categorical_crossentropy,
+        optimizer=Adam()
+    )
+
     m.summary()
     return m
 
 
 ################################################################################
+# build GAN
+gen = build_generator()
+disc = build_discriminator()
+
+disc.trainable = False
+
+gan_input = Input(
+    shape=(100,)
+)
+
+g = gen(gan_input)
+gan_output = disc(g)
+
+gan = Model(
+    input=gan_input,
+    output=gan_output
+)
+
+gan.compile(
+    loss=sparse_categorical_crossentropy,
+    optimizer=Adam()
+)
+
+gan.summary()
