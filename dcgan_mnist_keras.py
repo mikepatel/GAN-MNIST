@@ -19,7 +19,7 @@ import tensorflow as tf
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras import Sequential, Model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, Conv2DTranspose, \
-    BatchNormalization, Dropout, Flatten, LeakyReLU, Reshape, Input
+    BatchNormalization, Dropout, Flatten, LeakyReLU, Reshape, Input, UpSampling2D
 from tensorflow.keras.activations import relu, softmax, sigmoid
 from tensorflow.keras.losses import sparse_categorical_crossentropy
 from tensorflow.keras.optimizers import Adam
@@ -39,7 +39,7 @@ from IPython import display
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
 # reshape and normalize
-train_images = train_images.reshape(train_images.reshape[0], 28, 28, 1)
+train_images = train_images.reshape(train_images.shape[0], 28, 28, 1)
 train_images = train_images.astype(np.float32)
 train_images = (train_images - 127.5) / 127.5  # [-1, 1]
 
@@ -67,8 +67,10 @@ def build_generator():
     m.add(BatchNormalization())
 
     m.add(Reshape(
-        target_shape=(-1, 7, 7, 64)
+        target_shape=(7, 7, 64)
     ))
+
+    m.add(UpSampling2D())
 
     # deconvolution
     m.add(Conv2DTranspose(
@@ -79,6 +81,8 @@ def build_generator():
     ))
 
     m.add(BatchNormalization())
+
+    m.add(UpSampling2D())
 
     m.add(Conv2DTranspose(
         filters=32,
@@ -182,8 +186,8 @@ g = gen(gan_input)
 gan_output = disc(g)
 
 gan = Model(
-    input=gan_input,
-    output=gan_output
+    inputs=gan_input,
+    outputs=gan_output
 )
 
 gan.compile(
