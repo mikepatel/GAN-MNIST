@@ -45,6 +45,7 @@ train_images = (train_images - 127.5) / 127.5  # [-1, 1]
 
 BUFFER_SIZE = 60000
 BATCH_SIZE = 256
+NUM_EPOCHS = 200
 
 # use tf.data to create batches of dataset
 train_dataset = tf.data.Dataset.from_tensor_slices(train_images)
@@ -191,3 +192,36 @@ gan.compile(
 )
 
 gan.summary()
+
+
+################################################################################
+# training
+def train():
+    # adversarial ground truths
+    valid = np.ones((BATCH_SIZE, 1))
+    fake = np.zeros((BATCH_SIZE, 1))
+
+    for e in range(NUM_EPOCHS):
+        # input for discriminator
+        indices = np.random.randint(0, train_images.shape[0], size=BATCH_SIZE)
+        real_images = train_images[indices]
+
+        # input for generator
+        noise_input = np.random.normal(0, 1, size=[BATCH_SIZE, 100])
+        fake_images = gen(noise_input, training=True)
+
+        # train discriminator
+        disc.trainable = True
+        disc_loss_real = disc.train_on_batch(real_images, valid)
+        disc_loss_fake = disc.train_on_batch(fake_images, fake)
+        disc_loss = np.add(disc_loss_real, disc_loss_fake) * 0.5
+
+        # train generator
+        noise_input = np.random.normal(0, 1, size=[BATCH_SIZE, 100])
+        disc.trainable = False
+        gen_loss = gan.train_on_batch(noise_input, valid)
+
+        # save checkpoints
+
+        # tensorboard
+        
