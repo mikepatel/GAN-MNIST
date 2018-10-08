@@ -212,7 +212,7 @@ def train():
 
         # input for generator
         noise_input = np.random.normal(0, 1, size=[BATCH_SIZE, 100])
-        fake_images = gen(noise_input, training=True)
+        fake_images = gen.predict(noise_input)
 
         # train discriminator
         disc.trainable = True
@@ -226,6 +226,8 @@ def train():
         gen_loss = gan.train_on_batch(noise_input, valid)
 
         # save checkpoints
+        if e % 50 == 0:
+            print("Epoch: {}".format(e))
 
         # tensorboard
 
