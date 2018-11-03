@@ -189,7 +189,10 @@ for e in range(NUM_EPOCHS+1):
     gan_loss = gan.train_on_batch(noise_vector, misleading_labels)  # discriminator weights are frozen
 
     if e % 200 == 0:
-        gan.save_weights(history_file)  # save model weights
+        # save model weights
+        gan.save_weights(history_file)
+
+        # Tensorboard
 
         # print metrics
         print("Epoch: {}".format(e))
@@ -197,6 +200,11 @@ for e in range(NUM_EPOCHS+1):
     if e % 1000 == 0:
         # save images
         # save a generated image
-        image_file = dir + "\gen_" + str(e) + ".png"
+        image_file = dir + "\Gen_" + str(e) + ".png"
         img = image.array_to_img(gen_images[0] * 255., scale=False)
+        img.save(image_file)
+
+        # save a real image for comparison
+        image_file = dir + "\Real_" + str(e) + ".png"
+        img = image.array_to_img(real_images[0] * 255., scale=False)
         img.save(image_file)
