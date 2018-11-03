@@ -57,6 +57,8 @@ g.add(Conv2DTranspose(
     activation=LeakyReLU(0.3)
 ))
 
+g.add(BatchNormalization())
+
 g.add(Conv2DTranspose(
     filters=32,
     kernel_size=[4, 4],
@@ -64,6 +66,18 @@ g.add(Conv2DTranspose(
     padding="same",
     activation=LeakyReLU(0.3)
 ))
+
+g.add(BatchNormalization())
+
+g.add(Conv2DTranspose(
+    filters=8,
+    kernel_size=[4, 4],
+    strides=1,
+    padding="same",
+    activation=LeakyReLU(0.3)
+))
+
+g.add(BatchNormalization())
 
 g.add(Conv2DTranspose(
     filters=1,
@@ -88,6 +102,8 @@ d.add(Conv2D(
     activation=LeakyReLU(0.3)
 ))
 
+d.add(Dropout(rate=0.4))
+
 d.add(Conv2D(
     filters=64,
     kernel_size=[4, 4],
@@ -96,8 +112,18 @@ d.add(Conv2D(
     activation=LeakyReLU(0.3)
 ))
 
+d.add(Dropout(rate=0.4))
+
 d.add(Conv2D(
     filters=128,
+    kernel_size=[4, 4],
+    strides=2,
+    padding="same",
+    activation=LeakyReLU(0.3)
+))
+
+d.add(Conv2D(
+    filters=256,
     kernel_size=[4, 4],
     strides=2,
     padding="same",
@@ -121,7 +147,7 @@ d.compile(
 d.summary()
 
 ##################################################################################################
-d.trainable = False  # set discriminator weights to non-trainable
+#d.trainable = False  # set discriminator weights to non-trainable
 
 gan = Sequential()
 gan.add(g)
@@ -174,7 +200,7 @@ for e in range(NUM_EPOCHS+1):
 
     # train discriminator
     # can concatenate images to simulate mixing
-    d.trainable = True
+    #d.trainable = True
     d_real_loss = d.train_on_batch(real_images, real_labels)
     d_fake_loss = d.train_on_batch(gen_images, fake_labels)
 
@@ -185,7 +211,7 @@ for e in range(NUM_EPOCHS+1):
     misleading_labels = np.zeros((BATCH_SIZE, 1))
 
     # train generator
-    d.trainable = False
+    #d.trainable = False
     gan_loss = gan.train_on_batch(noise_vector, misleading_labels)  # discriminator weights are frozen
 
     if e % 200 == 0:
@@ -200,11 +226,11 @@ for e in range(NUM_EPOCHS+1):
     if e % 1000 == 0:
         # save images
         # save a generated image
-        image_file = dir + "\Gen_" + str(e) + ".png"
+        image_file = dir + "\\" + str(e) + "_Gen" + ".png"
         img = image.array_to_img(gen_images[0] * 255., scale=False)
         img.save(image_file)
 
         # save a real image for comparison
-        image_file = dir + "\Real_" + str(e) + ".png"
+        image_file = dir + "\\" + str(e) + "_Real" + ".png"
         img = image.array_to_img(real_images[0] * 255., scale=False)
         img.save(image_file)
