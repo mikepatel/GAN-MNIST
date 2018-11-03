@@ -33,25 +33,35 @@ num_cols = 28
 num_channels = 1
 
 latent_dim = 100
-NUM_EPOCHS = 100000
+NUM_EPOCHS = 10000
 BATCH_SIZE = 32
 ##################################################################################################
 # GENERATOR
 g = Sequential()
 
 g.add(Dense(
-    units=7*7*64,  # 7x7 64-channel fmap
+    units=7*7*256,  # 7x7 64-channel fmap
     input_shape=(latent_dim,),
     activation=LeakyReLU(0.3)
 ))
 
 g.add(Reshape(
-    target_shape=(7, 7, 64)
+    target_shape=(7, 7, 256)
 ))
 
 g.add(Conv2DTranspose(
+    filters=128,
+    kernel_size=[5, 5],
+    strides=2,
+    padding="same",
+    activation=LeakyReLU(0.3)
+))
+
+g.add(BatchNormalization())
+
+g.add(Conv2DTranspose(
     filters=64,
-    kernel_size=[4, 4],
+    kernel_size=[5, 5],
     strides=2,
     padding="same",
     activation=LeakyReLU(0.3)
@@ -61,17 +71,7 @@ g.add(BatchNormalization())
 
 g.add(Conv2DTranspose(
     filters=32,
-    kernel_size=[4, 4],
-    strides=2,
-    padding="same",
-    activation=LeakyReLU(0.3)
-))
-
-g.add(BatchNormalization())
-
-g.add(Conv2DTranspose(
-    filters=8,
-    kernel_size=[4, 4],
+    kernel_size=[5, 5],
     strides=1,
     padding="same",
     activation=LeakyReLU(0.3)
@@ -81,7 +81,7 @@ g.add(BatchNormalization())
 
 g.add(Conv2DTranspose(
     filters=1,
-    kernel_size=[4, 4],
+    kernel_size=[5, 5],
     strides=1,
     padding="same",
     activation=tanh
@@ -94,8 +94,8 @@ g.summary()
 d = Sequential()
 
 d.add(Conv2D(
-    filters=32,
-    kernel_size=[4, 4],
+    filters=64,
+    kernel_size=[5, 5],
     strides=2,
     input_shape=(num_rows, num_cols, num_channels),
     padding="same",
@@ -105,8 +105,8 @@ d.add(Conv2D(
 d.add(Dropout(rate=0.4))
 
 d.add(Conv2D(
-    filters=64,
-    kernel_size=[4, 4],
+    filters=128,
+    kernel_size=[5, 5],
     strides=2,
     padding="same",
     activation=LeakyReLU(0.3)
@@ -115,17 +115,17 @@ d.add(Conv2D(
 d.add(Dropout(rate=0.4))
 
 d.add(Conv2D(
-    filters=128,
-    kernel_size=[4, 4],
+    filters=256,
+    kernel_size=[5, 5],
     strides=2,
     padding="same",
     activation=LeakyReLU(0.3)
 ))
 
 d.add(Conv2D(
-    filters=256,
-    kernel_size=[4, 4],
-    strides=2,
+    filters=512,
+    kernel_size=[5, 5],
+    strides=1,
     padding="same",
     activation=LeakyReLU(0.3)
 ))
