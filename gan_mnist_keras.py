@@ -33,7 +33,7 @@ num_cols = 28
 num_channels = 1
 
 latent_dim = 100
-NUM_EPOCHS = 10000
+NUM_EPOCHS = 100000
 BATCH_SIZE = 32
 ##################################################################################################
 # GENERATOR
@@ -194,6 +194,7 @@ for e in range(NUM_EPOCHS+1):
         # print metrics
         print("Epoch: {}".format(e))
 
+    if e % 1000 == 0:
         # save images
         # save a generated image
         image_file = dir + "\gen_" + str(e) + ".png"
