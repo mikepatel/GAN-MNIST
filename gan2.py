@@ -32,7 +32,7 @@ num_channels = 1
 
 latent_dim = 100
 NUM_EPOCHS = 10000
-BATCH_SIZE = 256
+BATCH_SIZE = 64
 
 
 ##################################################################################################
@@ -86,8 +86,6 @@ class GAN():
         ))
 
         d.add(Flatten())
-
-        d.add(Dropout(rate=0.4))
 
         d.add(Dense(
             units=1,
@@ -178,9 +176,9 @@ class GAN():
             metrics=["accuracy"]
         )
 
-        self.gan = self.build_gan()
-
         self.g = self.build_generator()
+
+        self.gan = self.build_gan()
 
         # callbacks
         dir = os.path.join(os.getcwd(), datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
@@ -205,12 +203,12 @@ class GAN():
             d_images = np.concatenate((real_images, gen_images))
 
             # labels "real", "fake"
-            real_labels = np.zeros((BATCH_SIZE, 1))
-            fake_labels = np.ones((BATCH_SIZE, 1))
+            real_labels = np.ones((BATCH_SIZE, 1))
+            fake_labels = np.zeros((BATCH_SIZE, 1))
 
             # add random noise to labels
-            real_labels += 0.05 * np.random.random(real_labels.shape)
-            fake_labels += 0.05 * np.random.random(fake_labels.shape)
+            #real_labels += 0.05 * np.random.random(real_labels.shape)
+            #fake_labels += 0.05 * np.random.random(fake_labels.shape)
 
             # concatenate labels
             d_labels = np.concatenate((real_labels, fake_labels))
@@ -263,7 +261,7 @@ if __name__ == "__main__":
     # rescale -1 to 1 and normalize
     train_images = train_images.reshape(train_images.shape[0], num_rows, num_cols, num_channels)
     train_images = train_images.astype(np.float32)
-    train_images = (train_images - 127.5) / 127.5
+    #train_images = (train_images - 127.5) / 127.5
 
     gan = GAN()
     gan.train(train_images)
