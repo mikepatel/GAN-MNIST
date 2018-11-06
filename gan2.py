@@ -16,7 +16,7 @@ from datetime import datetime
 
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Input, Dense, Conv2D, Conv2DTranspose, Reshape, Dropout, \
+from tensorflow.keras.layers import Dense, Conv2D, Conv2DTranspose, Reshape, Dropout, \
     BatchNormalization, Flatten, LeakyReLU
 from tensorflow.keras.activations import tanh, sigmoid, relu
 from tensorflow.keras.losses import binary_crossentropy
@@ -34,8 +34,9 @@ num_channels = 1
 
 latent_dim = 100
 NUM_EPOCHS = 10000
-BATCH_SIZE = 256
-DROPOUT_RATE = 0.4
+BATCH_SIZE = 64
+DROPOUT_RATE = 0.3
+LEAKY_RELU_ALPHA = 0.2
 
 ##################################################################################################
 # load dataset
@@ -81,6 +82,8 @@ g.add(Conv2DTranspose(
     activation=relu
 ))
 
+g.add(BatchNormalization())
+
 g.add(Conv2DTranspose(
     filters=1,
     kernel_size=[5, 5],
@@ -109,7 +112,7 @@ d.add(Dropout(rate=DROPOUT_RATE))
 d.add(Conv2D(
     filters=128,
     kernel_size=[5, 5],
-    strides=2,
+    strides=1,
     padding="same",
     activation=relu
 ))
@@ -152,8 +155,6 @@ d.compile(
 d.trainable = False  # freeze weights
 
 gan = Sequential()
-gan_input = Input(shape=(latent_dim,))
-#gan.add(g(gan_input))
 gan.add(g)
 gan.add(d)
 gan.compile(
