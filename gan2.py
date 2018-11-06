@@ -6,7 +6,8 @@
 # dataset: MNIST
 
 # Notes:
-#   - relu -> LeakyReLU ?
+#   - relu -> LeakyReLU?
+#   - Add more layer depth?
 
 ##################################################################################################
 # IMPORTs
@@ -35,7 +36,7 @@ num_channels = 1
 latent_dim = 100
 NUM_EPOCHS = 10000
 BATCH_SIZE = 64
-DROPOUT_RATE = 0.3
+DROPOUT_RATE = 0.2
 LEAKY_RELU_ALPHA = 0.2
 
 ##################################################################################################
@@ -99,7 +100,7 @@ g.summary()
 d = Sequential()
 
 d.add(Conv2D(
-    filters=64,
+    filters=32,
     kernel_size=[5, 5],
     strides=2,
     input_shape=(num_rows, num_cols, num_channels),
@@ -110,9 +111,9 @@ d.add(Conv2D(
 d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Conv2D(
-    filters=128,
+    filters=64,
     kernel_size=[5, 5],
-    strides=1,
+    strides=2,
     padding="same",
     activation=relu
 ))
@@ -120,9 +121,9 @@ d.add(Conv2D(
 d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Conv2D(
-    filters=256,
+    filters=128,
     kernel_size=[5, 5],
-    strides=2,
+    strides=1,
     padding="same",
     activation=relu
 ))
