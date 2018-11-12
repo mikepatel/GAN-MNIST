@@ -35,8 +35,8 @@ num_channels = 1
 
 latent_dim = 100
 NUM_EPOCHS = 10000
-BATCH_SIZE = 128
-DROPOUT_RATE = 0.1
+BATCH_SIZE = 256
+DROPOUT_RATE = 0.4
 #LEAKY_RELU_ALPHA = 0.2
 
 ##################################################################################################
@@ -54,7 +54,7 @@ train_images = (train_images - 127.5) / 127.5
 g = Sequential()
 
 g.add(Dense(
-    units=7*7*256,
+    units=7*7*128,
     input_dim=latent_dim,
     activation=relu
 ))
@@ -62,11 +62,11 @@ g.add(Dense(
 g.add(BatchNormalization())
 
 g.add(Reshape(
-    target_shape=(7, 7, 256)
+    target_shape=(7, 7, 128)
 ))
 
 g.add(Conv2DTranspose(
-    filters=128,
+    filters=64,
     kernel_size=[5, 5],
     strides=2,
     padding="same",
@@ -76,7 +76,7 @@ g.add(Conv2DTranspose(
 g.add(BatchNormalization())
 
 g.add(Conv2DTranspose(
-    filters=64,
+    filters=32,
     kernel_size=[5, 5],
     strides=2,
     padding="same",
@@ -108,7 +108,7 @@ d.add(Conv2D(
     activation=relu
 ))
 
-#d.add(Dropout(rate=DROPOUT_RATE))
+d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Conv2D(
     filters=64,
@@ -118,7 +118,7 @@ d.add(Conv2D(
     activation=relu
 ))
 
-#d.add(Dropout(rate=DROPOUT_RATE))
+d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Conv2D(
     filters=128,
@@ -128,7 +128,7 @@ d.add(Conv2D(
     activation=relu
 ))
 
-#d.add(Dropout(rate=DROPOUT_RATE))
+d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Flatten())
 
@@ -169,7 +169,7 @@ dir = os.path.join(os.getcwd(), datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
 if not os.path.exists(dir):
     os.makedirs(dir)
 
-history_file = dir + "\gan_mnist_keras.h5"
+history_file = dir + "\gan_mnist_keras_" + str(BATCH_SIZE) + "_" + str(DROPOUT_RATE) + ".h5"
 save_callback = ModelCheckpoint(filepath=history_file, verbose=1)
 tb_callback = TensorBoard(log_dir=dir)
 
