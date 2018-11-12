@@ -35,9 +35,9 @@ num_channels = 1
 
 latent_dim = 100
 NUM_EPOCHS = 10000
-BATCH_SIZE = 64
-DROPOUT_RATE = 0.2
-LEAKY_RELU_ALPHA = 0.2
+BATCH_SIZE = 128
+DROPOUT_RATE = 0.1
+#LEAKY_RELU_ALPHA = 0.2
 
 ##################################################################################################
 # load dataset
@@ -54,7 +54,7 @@ train_images = (train_images - 127.5) / 127.5
 g = Sequential()
 
 g.add(Dense(
-    units=7*7*128,
+    units=7*7*256,
     input_dim=latent_dim,
     activation=relu
 ))
@@ -62,11 +62,11 @@ g.add(Dense(
 g.add(BatchNormalization())
 
 g.add(Reshape(
-    target_shape=(7, 7, 128)
+    target_shape=(7, 7, 256)
 ))
 
 g.add(Conv2DTranspose(
-    filters=64,
+    filters=128,
     kernel_size=[5, 5],
     strides=2,
     padding="same",
@@ -76,7 +76,7 @@ g.add(Conv2DTranspose(
 g.add(BatchNormalization())
 
 g.add(Conv2DTranspose(
-    filters=32,
+    filters=64,
     kernel_size=[5, 5],
     strides=2,
     padding="same",
@@ -108,7 +108,7 @@ d.add(Conv2D(
     activation=relu
 ))
 
-d.add(Dropout(rate=DROPOUT_RATE))
+#d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Conv2D(
     filters=64,
@@ -118,7 +118,7 @@ d.add(Conv2D(
     activation=relu
 ))
 
-d.add(Dropout(rate=DROPOUT_RATE))
+#d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Conv2D(
     filters=128,
@@ -128,7 +128,7 @@ d.add(Conv2D(
     activation=relu
 ))
 
-d.add(Dropout(rate=DROPOUT_RATE))
+#d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Flatten())
 
@@ -173,8 +173,6 @@ history_file = dir + "\gan_mnist_keras.h5"
 save_callback = ModelCheckpoint(filepath=history_file, verbose=1)
 tb_callback = TensorBoard(log_dir=dir)
 
-
-
 for e in range(NUM_EPOCHS+1):
     # generator
     noise_vector = np.random.rand(BATCH_SIZE, latent_dim)
@@ -192,8 +190,8 @@ for e in range(NUM_EPOCHS+1):
     fake_labels = np.zeros((BATCH_SIZE, 1))
 
     # add random noise to labels
-    real_labels += 0.05 * np.random.random(real_labels.shape)
-    fake_labels += 0.05 * np.random.random(fake_labels.shape)
+    #real_labels += 0.05 * np.random.random(real_labels.shape)
+    #fake_labels += 0.05 * np.random.random(fake_labels.shape)
 
     # concatenate labels
     d_labels = np.concatenate((real_labels, fake_labels))
