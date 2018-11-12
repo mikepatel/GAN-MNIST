@@ -173,6 +173,8 @@ history_file = dir + "\gan_mnist_keras.h5"
 save_callback = ModelCheckpoint(filepath=history_file, verbose=1)
 tb_callback = TensorBoard(log_dir=dir)
 
+
+
 for e in range(NUM_EPOCHS+1):
     # generator
     noise_vector = np.random.rand(BATCH_SIZE, latent_dim)
@@ -198,7 +200,7 @@ for e in range(NUM_EPOCHS+1):
 
     # train discriminator
     d.trainable = True
-    d.train_on_batch(d_images, d_labels)
+    d_loss = d.train_on_batch(d_images, d_labels)
 
     # misleading labels: "all these images are real" - obviously a lie
     misleading_labels = np.ones((BATCH_SIZE, 1))
@@ -212,10 +214,11 @@ for e in range(NUM_EPOCHS+1):
         # save model weights
         gan.save_weights(history_file)
 
-        # Tensorboard
-
         # print metrics
-        print("Epoch: {}".format(e))
+        print("\nEpoch: {}".format(e))
+        print("Discriminator Real: ", d_loss[0])
+        print("Discriminator Fake: ", d_loss[1])
+        print("GAN: ", gan_loss)
 
     if e % 500 == 0:
         # save a generated image
