@@ -34,7 +34,7 @@ num_cols = 28
 num_channels = 1
 
 latent_dim = 100
-NUM_EPOCHS = 10000
+NUM_EPOCHS = 10000  # probably needs to be closer to 50k
 BATCH_SIZE = 256
 DROPOUT_RATE = 0.4
 #LEAKY_RELU_ALPHA = 0.2
