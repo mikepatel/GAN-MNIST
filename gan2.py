@@ -216,8 +216,7 @@ for e in range(NUM_EPOCHS+1):
 
         # print metrics
         print("\nEpoch: {}".format(e))
-        print("Discriminator Real: ", d_loss[0])
-        print("Discriminator Fake: ", d_loss[1])
+        print("Discriminator: ", d_loss)
         print("GAN: ", gan_loss)
 
     if e % 500 == 0:
