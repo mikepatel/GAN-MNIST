@@ -35,10 +35,10 @@ num_channels = 1
 
 #
 latent_dim = 100
-NUM_EPOCHS = 10000  # probably needs to be closer to 50k?
-BATCH_SIZE = 64
-DROPOUT_RATE = 0.2
-LEAKY_RELU_ALPHA = 0.2
+NUM_EPOCHS = 20000  # probably needs to be closer to 50k?
+BATCH_SIZE = 128
+DROPOUT_RATE = 0.25
+LEAKY_RELU_ALPHA = 0.3
 
 ##################################################################################################
 # load dataset
@@ -87,6 +87,8 @@ g.add(Conv2DTranspose(
 ))
 
 g.add(BatchNormalization())
+
+g.add(Dropout(rate=DROPOUT_RATE))
 
 g.add(Conv2DTranspose(
     filters=1,
@@ -179,7 +181,6 @@ tb_callback = TensorBoard(log_dir=dir)
 for e in range(NUM_EPOCHS+1):
     # generator
     noise_vector = np.random.normal(size=(BATCH_SIZE, latent_dim))  # Gaussian noise
-    #noise_vector = np.random.rand(BATCH_SIZE, latent_dim)  # Uniform noise
     gen_images = g.predict(noise_vector)
 
     # discriminator
@@ -210,7 +211,6 @@ for e in range(NUM_EPOCHS+1):
     # train generator
     d.trainable = False
     noise_vector = np.random.normal(size=(BATCH_SIZE, latent_dim))  # Gaussian noise
-    #noise_vector = np.random.rand(BATCH_SIZE, latent_dim)
     gan_loss = gan.train_on_batch(noise_vector, misleading_labels)
 
     if e % 200 == 0:
