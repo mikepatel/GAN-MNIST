@@ -36,9 +36,9 @@ num_channels = 1
 #
 latent_dim = 100
 NUM_EPOCHS = 20000  # probably needs to be closer to 50k?
-BATCH_SIZE = 128
-DROPOUT_RATE = 0.25
-LEAKY_RELU_ALPHA = 0.3
+BATCH_SIZE = 64
+DROPOUT_RATE = 0.3
+LEAKY_RELU_ALPHA = 0.25
 
 ##################################################################################################
 # load dataset
@@ -126,7 +126,7 @@ d.add(Conv2D(
 d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Conv2D(
-    filters=128,
+    filters=256,
     kernel_size=[4, 4],
     strides=1,
     padding="same",
