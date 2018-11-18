@@ -33,11 +33,12 @@ num_rows = 28
 num_cols = 28
 num_channels = 1
 
+#
 latent_dim = 100
-NUM_EPOCHS = 10000  # probably needs to be closer to 50k
-BATCH_SIZE = 256
-DROPOUT_RATE = 0.4
-#LEAKY_RELU_ALPHA = 0.2
+NUM_EPOCHS = 10000  # probably needs to be closer to 50k?
+BATCH_SIZE = 64
+DROPOUT_RATE = 0.2
+LEAKY_RELU_ALPHA = 0.2
 
 ##################################################################################################
 # load dataset
@@ -54,40 +55,42 @@ train_images = (train_images - 127.5) / 127.5
 g = Sequential()
 
 g.add(Dense(
-    units=7*7*128,
+    units=7*7*512,
     input_dim=latent_dim,
-    activation=relu
+    activation=LeakyReLU(alpha=LEAKY_RELU_ALPHA)
 ))
 
 g.add(BatchNormalization())
 
 g.add(Reshape(
-    target_shape=(7, 7, 128)
+    target_shape=(7, 7, 512)
 ))
 
 g.add(Conv2DTranspose(
-    filters=64,
-    kernel_size=[5, 5],
+    filters=128,
+    kernel_size=[4, 4],
     strides=2,
     padding="same",
-    activation=relu
+    activation=LeakyReLU(alpha=LEAKY_RELU_ALPHA)
 ))
 
 g.add(BatchNormalization())
 
+g.add(Dropout(rate=DROPOUT_RATE))
+
 g.add(Conv2DTranspose(
     filters=32,
-    kernel_size=[5, 5],
+    kernel_size=[4, 4],
     strides=2,
     padding="same",
-    activation=relu
+    activation=LeakyReLU(alpha=LEAKY_RELU_ALPHA)
 ))
 
 g.add(BatchNormalization())
 
 g.add(Conv2DTranspose(
     filters=1,
-    kernel_size=[5, 5],
+    kernel_size=[4, 4],
     strides=1,
     padding="same",
     activation=tanh
@@ -101,31 +104,31 @@ d = Sequential()
 
 d.add(Conv2D(
     filters=32,
-    kernel_size=[5, 5],
+    kernel_size=[4, 4],
     strides=2,
     input_shape=(num_rows, num_cols, num_channels),
     padding="same",
-    activation=relu
+    activation=LeakyReLU(alpha=LEAKY_RELU_ALPHA)
 ))
 
 d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Conv2D(
     filters=64,
-    kernel_size=[5, 5],
+    kernel_size=[4, 4],
     strides=2,
     padding="same",
-    activation=relu
+    activation=LeakyReLU(alpha=LEAKY_RELU_ALPHA)
 ))
 
 d.add(Dropout(rate=DROPOUT_RATE))
 
 d.add(Conv2D(
     filters=128,
-    kernel_size=[5, 5],
+    kernel_size=[4, 4],
     strides=1,
     padding="same",
-    activation=relu
+    activation=LeakyReLU(alpha=LEAKY_RELU_ALPHA)
 ))
 
 d.add(Dropout(rate=DROPOUT_RATE))
@@ -175,7 +178,8 @@ tb_callback = TensorBoard(log_dir=dir)
 
 for e in range(NUM_EPOCHS+1):
     # generator
-    noise_vector = np.random.rand(BATCH_SIZE, latent_dim)
+    noise_vector = np.random.normal(size=(BATCH_SIZE, latent_dim))  # Gaussian noise
+    #noise_vector = np.random.rand(BATCH_SIZE, latent_dim)  # Uniform noise
     gen_images = g.predict(noise_vector)
 
     # discriminator
@@ -190,8 +194,8 @@ for e in range(NUM_EPOCHS+1):
     fake_labels = np.zeros((BATCH_SIZE, 1))
 
     # add random noise to labels
-    #real_labels += 0.05 * np.random.random(real_labels.shape)
-    #fake_labels += 0.05 * np.random.random(fake_labels.shape)
+    real_labels += 0.05 * np.random.random(real_labels.shape)
+    fake_labels += 0.05 * np.random.random(fake_labels.shape)
 
     # concatenate labels
     d_labels = np.concatenate((real_labels, fake_labels))
@@ -205,7 +209,8 @@ for e in range(NUM_EPOCHS+1):
 
     # train generator
     d.trainable = False
-    noise_vector = np.random.rand(BATCH_SIZE, latent_dim)
+    noise_vector = np.random.normal(size=(BATCH_SIZE, latent_dim))  # Gaussian noise
+    #noise_vector = np.random.rand(BATCH_SIZE, latent_dim)
     gan_loss = gan.train_on_batch(noise_vector, misleading_labels)
 
     if e % 200 == 0:
