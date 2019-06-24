@@ -1,4 +1,8 @@
 # GAN
-Collection of Generative Adversarial Networks
+## Overview
 
-* using MNIST dataset
+## Instructions
+* Coming Soon!
+
+## Results
+* Coming Soon!
