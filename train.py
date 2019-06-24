@@ -25,6 +25,7 @@ import numpy as np
 from datetime import datetime
 
 import tensorflow as tf
+from parameters import *
 
 
 ################################################################################
@@ -32,11 +33,6 @@ import tensorflow as tf
 NUM_EPOCHS = 1
 BATCH_SIZE = 64
 BUFFER_SIZE = 60000  # size of training set
-
-# based on MNIST images: 28x28 greyscale
-num_rows = 28
-num_cols = 28
-num_channels = 1
 
 
 ################################################################################
