@@ -110,3 +110,7 @@ def build_discriminator():
     m.add(tf.keras.layers.Dense(
         units=1
     ))
+
+    m.summary()
+
+    return m

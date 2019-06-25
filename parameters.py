@@ -27,3 +27,4 @@ NUM_EPOCHS = 1
 BATCH_SIZE = 64
 BUFFER_SIZE = 60000  # size of training set
 Z_DIM = 100
+NUM_GEN = 16
