@@ -22,14 +22,22 @@ Things to examine:
 # Imports
 import os
 from datetime import datetime
+import numpy as np
 import matplotlib.pyplot as plt
 
 import tensorflow as tf
+
 from parameters import *
 from model import build_generator, build_discriminator
 
 
 ################################################################################
+# print image to screen
+def print_image(image):
+    plt.figure(figsize=(2, 2))  # 2x2 inches
+    plt.imshow(image, cmap="gray")
+    plt.show()
+
 
 ################################################################################
 # Main
@@ -43,6 +51,12 @@ if __name__ == "__main__":
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
     (train_images, train_labels), (_, _) = tf.keras.datasets.mnist.load_data()
+
+    # show a training image before Preprocessing Transformation
+    i = np.random.randint(low=0, high=len(train_images))
+    random_image = train_images[i]
+    print_image(random_image)
+    quit()
 
     # Reshape: (28, 28) => (28, 28, 1)
     print("Shape of training images before reshape: {}".format(train_images[0].shape))
