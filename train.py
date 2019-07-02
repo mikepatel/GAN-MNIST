@@ -40,6 +40,25 @@ def print_image(image):
 
 
 ################################################################################
+# Callbacks
+def build_callbacks(chkpt_dir):
+    history_file = os.path.join(chkpt_dir, "checkpoint_{epoch}")
+
+    # save callback
+    sc = tf.keras.callbacks.ModelCheckpoint(
+        filepath=history_file,
+        save_weights_only=True,
+        period=1,
+        verbose=1
+    )
+
+    # TensorBoard callback
+    tb = tf.keras.callbacks.TensorBoard(log_dir=chkpt_dir)
+
+    return sc, tb
+
+
+################################################################################
 # Main
 if __name__ == "__main__":
     # enable eager execution
@@ -80,7 +99,30 @@ if __name__ == "__main__":
     print("Shape of batches: {}".format(train_dataset))
 
     # ----- MODEL ----- #
+    g = build_generator()
+    d = build_discriminator()
+
+    # build gan model
+    d.trainable = False
+    gan = tf.keras.Sequential()
+    gan.add(g)
+    gan.add(d)
+
+    # configure model training
+    gan.compile(
+        loss=tf.keras.losses.binary_crossentropy,
+        optimizer=tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5),
+        metrics=["accuracy"]
+    )
+
+    gan.summary()
 
     # ----- TRAINING ----- #
+    # callbacks for checkpoints, TensorBoard
+    dir_name = "Results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    checkpoint_dir = os.path.join(os.getcwd(), dir_name)
+    save_callback, tb_callback = build_callbacks(checkpoint_dir)
+
+    # training loop
 
     # ----- GENERATE ----- #

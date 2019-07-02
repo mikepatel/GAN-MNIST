@@ -35,6 +35,7 @@ def build_generator():
     ))
     m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU())
+    #m.add(tf.keras.layers.ReLU())
 
     # Reshape layer
     m.add(tf.keras.layers.Reshape((7, 7, 512)))
@@ -53,7 +54,7 @@ def build_generator():
     m.add(tf.keras.layers.Conv2DTranspose(
         filters=256,
         kernel_size=(5, 5),
-        strides=(2, 2),
+        strides=(1, 1),
         padding="same"
     ))
     m.add(tf.keras.layers.BatchNormalization())
@@ -77,6 +78,13 @@ def build_generator():
         padding="same",
         activation=tf.keras.activations.tanh
     ))
+
+    # configure model training
+    m.compile(
+        loss=tf.keras.losses.binary_crossentropy,
+        optimizer=tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5),
+        metrics=["accuracy"]
+    )
 
     m.summary()
 
@@ -120,6 +128,13 @@ def build_discriminator():
     m.add(tf.keras.layers.Dense(
         units=1
     ))
+
+    # configure model training
+    m.compile(
+        loss=tf.keras.losses.binary_crossentropy,
+        optimizer=tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5),
+        metrics=["accuracy"]
+    )
 
     m.summary()
 
