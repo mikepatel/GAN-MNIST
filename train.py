@@ -160,7 +160,7 @@ if __name__ == "__main__":
         #
         # print metrics
         print("\nEpoch {}".format(epoch))
-        print("Discriminator Loss: {}".format(d_loss))
-        print("Generator Loss: {}".format(g_loss))
+        print("Discriminator :: Loss: {:.4f}, Accuracy: {:.4f}".format(d_loss[0], d_loss[1]))
+        print("Generator :: Loss: {:.4f}, Accuracy: {:.4f}".format(g_loss[0], g_loss[1]))
 
     # ----- GENERATE ----- #
