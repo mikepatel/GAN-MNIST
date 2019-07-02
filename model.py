@@ -28,20 +28,20 @@ from parameters import *
 def build_generator():
     m = tf.keras.Sequential()
 
-    #
+    # Input layer
     m.add(tf.keras.layers.Dense(
-        units=7*7*256,
+        units=7*7*512,
         input_shape=(Z_DIM, )
     ))
     m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU())
 
-    #
-    m.add(tf.keras.layers.Reshape((7, 7, 256)))
+    # Reshape layer
+    m.add(tf.keras.layers.Reshape((7, 7, 512)))
 
-    #
+    # Convolutional Layer 1
     m.add(tf.keras.layers.Conv2DTranspose(
-        filters=128,
+        filters=512,
         kernel_size=(5, 5),
         strides=(1, 1),
         padding="same"
@@ -49,9 +49,9 @@ def build_generator():
     m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU())
 
-    #
+    # Convolutional Layer 2
     m.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
+        filters=256,
         kernel_size=(5, 5),
         strides=(2, 2),
         padding="same"
@@ -59,9 +59,19 @@ def build_generator():
     m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU())
 
-    #
+    # Convolutional Layer 3
     m.add(tf.keras.layers.Conv2DTranspose(
-        filters=1,
+        filters=128,
+        kernel_size=(5, 5),
+        strides=(2, 2),
+        padding="same"
+    ))
+    m.add(tf.keras.layers.BatchNormalization())
+    m.add(tf.keras.layers.LeakyReLU())
+
+    # Convolutional Layer 4
+    m.add(tf.keras.layers.Conv2DTranspose(
+        filters=64,
         kernel_size=(5, 5),
         strides=(2, 2),
         padding="same",
@@ -78,7 +88,7 @@ def build_generator():
 def build_discriminator():
     m = tf.keras.Sequential()
 
-    #
+    # Convolutional Layer 1
     m.add(tf.keras.layers.Conv2D(
         filters=64,
         kernel_size=(5, 5),
@@ -86,19 +96,19 @@ def build_discriminator():
         padding="same",
         input_shape=(28, 28, 1)
     ))
-    m.add(tf.keras.layers.LeakyReLU())
+    m.add(tf.keras.layers.LeakyReLU(0.2))
 
     #
     m.add(tf.keras.layers.Dropout(rate=0.3))  # fraction of input units to drop
 
-    #
+    # Convolutional Layer 2
     m.add(tf.keras.layers.Conv2D(
         filters=128,
         kernel_size=(5, 5),
         strides=(2, 2),
         padding="same"
     ))
-    m.add(tf.keras.layers.LeakyReLU())
+    m.add(tf.keras.layers.LeakyReLU(0.2))
 
     #
     m.add(tf.keras.layers.Dropout(rate=0.3))

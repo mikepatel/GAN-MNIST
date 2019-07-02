@@ -52,11 +52,13 @@ if __name__ == "__main__":
     # ETL = Extraction, Transformation, Load
     (train_images, train_labels), (_, _) = tf.keras.datasets.mnist.load_data()
 
+    '''
     # show a training image before Preprocessing Transformation
     i = np.random.randint(low=0, high=len(train_images))
     random_image = train_images[i]
     print_image(random_image)
     quit()
+    '''
 
     # Reshape: (28, 28) => (28, 28, 1)
     print("Shape of training images before reshape: {}".format(train_images[0].shape))
@@ -67,7 +69,7 @@ if __name__ == "__main__":
 
     print("Shape of training images after reshape: {}".format(train_images[0].shape))
 
-    # Normalize images to [-1, 1]
+    # Normalize images to [-1, 1] - tanh activation
     train_images = (train_images - 127.5) / 127.5
 
     # use tf.data.Dataset to create batches and shuffle => TF model
