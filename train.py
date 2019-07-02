@@ -124,5 +124,43 @@ if __name__ == "__main__":
     save_callback, tb_callback = build_callbacks(checkpoint_dir)
 
     # training loop
+    for epoch in range(NUM_EPOCHS+1):
+        # generator
+        noise_vector = np.random.normal(size=(BATCH_SIZE, Z_DIM))  # Gaussian noise
+        gen_image = g.predict(noise_vector)  # generate 1 image
+
+        # discriminator
+        idx = np.random.randint(low=0, high=len(train_images), size=BATCH_SIZE)
+        real_images = train_images[idx]  # batch of real images
+
+        # concatenate real and generated images for discriminator
+        d_images = np.concatenate((real_images, gen_image))
+
+        # labels "real", "fake"
+        real_labels = np.ones(shape=(BATCH_SIZE, 1))
+        fake_labels = np.zeros(shape=(BATCH_SIZE, 1))
+
+        # add random noise to labels
+
+        # concatentate labels
+        d_labels = np.concatenate((real_labels, fake_labels))
+
+        # train discriminator
+        d.trainable = True
+        d_loss = d.train_on_batch(d_images, d_labels)
+
+        # misleading labels for generator: "all these images are real" -- obviously a lie
+        misleading_labels = np.ones(shape=(BATCH_SIZE, 1))
+
+        # train generator
+        d.trainable = False
+        noise_vector = np.random.normal(size=(BATCH_SIZE, Z_DIM))  # Gaussian noise
+        g_loss = gan.train_on_batch(noise_vector, misleading_labels)
+
+        #
+        # print metrics
+        print("\nEpoch {}".format(epoch))
+        print("Discriminator Loss: {}".format(d_loss))
+        print("Generator Loss: {}".format(g_loss))
 
     # ----- GENERATE ----- #
