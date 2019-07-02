@@ -72,7 +72,7 @@ def build_generator():
 
     # Convolutional Layer 4
     m.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
+        filters=1,
         kernel_size=(5, 5),
         strides=(2, 2),
         padding="same",
