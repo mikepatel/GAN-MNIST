@@ -14,6 +14,8 @@ Notes:
     - DCGAN: https://arxiv.org/pdf/1511.06434.pdf
     - gif => imagemagick
     - eager execution => no need for placeholders
+    - https://medium.com/coinmonks/8-things-to-do-differently-in-tensorflows-eager-execution-mode-47cf429aa3ad
+    - https://github.com/moono/tf-eager-on-GAN/blob/master/tf-1.x/dcgan_eager_tf_1_12.py
 
 Things to examine:
 

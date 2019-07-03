@@ -27,6 +27,7 @@ from tf_1_12.parameters import *
 ################################################################################
 # Generator
 def build_generator():
+    """
     m = tf.keras.Sequential()
 
     # Input layer
@@ -90,11 +91,13 @@ def build_generator():
     m.summary()
 
     return m
+    """
 
 
 ################################################################################
 # Discriminator
 def build_discriminator():
+    """
     m = tf.keras.Sequential()
 
     # Convolutional Layer 1
@@ -140,3 +143,4 @@ def build_discriminator():
     m.summary()
 
     return m
+    """

@@ -100,7 +100,7 @@ if __name__ == "__main__":
                               shape=[None, Z_DIM],
                               name="noise_placeholder")
 
-    #
+    # placeholder inputs to the models
     g_out = build_generator(noise_pl, reuse=False)
 
     d_real_out = build_discriminator(real_image_pl, reuse=False)
