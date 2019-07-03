@@ -40,25 +40,6 @@ def print_image(image):
 
 
 ################################################################################
-# Callbacks
-def build_callbacks(chkpt_dir):
-    history_file = os.path.join(chkpt_dir, "checkpoint_{epoch}")
-
-    # save callback
-    sc = tf.keras.callbacks.ModelCheckpoint(
-        filepath=history_file,
-        save_weights_only=True,
-        period=1,
-        verbose=1
-    )
-
-    # TensorBoard callback
-    tb = tf.keras.callbacks.TensorBoard(log_dir=chkpt_dir)
-
-    return sc, tb
-
-
-################################################################################
 # Main
 if __name__ == "__main__":
     # enable eager execution
@@ -118,23 +99,25 @@ if __name__ == "__main__":
     gan.summary()
 
     # ----- TRAINING ----- #
-    # callbacks for checkpoints, TensorBoard
+    # directory for save checkpoints, generated results
     dir_name = "Results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-    checkpoint_dir = os.path.join(os.getcwd(), dir_name)
-    save_callback, tb_callback = build_callbacks(checkpoint_dir)
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+
+    model_file = os.path.join(dir_name, "model.h5")
 
     # training loop
     for epoch in range(NUM_EPOCHS+1):
         # generator
         noise_vector = np.random.normal(size=(BATCH_SIZE, Z_DIM))  # Gaussian noise
-        gen_image = g.predict(noise_vector)  # generate 1 image
+        gen_images = g.predict(noise_vector)  # batch of generated images
 
         # discriminator
         idx = np.random.randint(low=0, high=len(train_images), size=BATCH_SIZE)
         real_images = train_images[idx]  # batch of real images
 
         # concatenate real and generated images for discriminator
-        d_images = np.concatenate((real_images, gen_image))
+        d_images = np.concatenate((real_images, gen_images))
 
         # labels "real", "fake"
         real_labels = np.ones(shape=(BATCH_SIZE, 1))
@@ -157,10 +140,19 @@ if __name__ == "__main__":
         noise_vector = np.random.normal(size=(BATCH_SIZE, Z_DIM))  # Gaussian noise
         g_loss = gan.train_on_batch(noise_vector, misleading_labels)
 
-        #
         # print metrics
         print("\nEpoch {}".format(epoch))
         print("Discriminator :: Loss: {:.4f}, Accuracy: {:.4f}".format(d_loss[0], d_loss[1]))
         print("Generator :: Loss: {:.4f}, Accuracy: {:.4f}".format(g_loss[0], g_loss[1]))
 
+        # generate during training
+        # save a generated image
+        image_file = os.path.join(dir_name, str(epoch) + "_gen.png")
+        image = tf.keras.preprocessing.image.array_to_img(gen_images[0] * 255., scale=False)
+        image.save(image_file)
+
+    # save model weights
+    gan.save(model_file)
+
     # ----- GENERATE ----- #
+    # load saved model weights
