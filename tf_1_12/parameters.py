@@ -18,9 +18,9 @@ Things to examine:
 """
 ################################################################################
 # based on MNIST images: 28x28 greyscale
-num_rows = 28
-num_cols = 28
-num_channels = 1
+IMAGE_ROWS = 28
+IMAGE_COLS = 28
+IMAGE_CHANNELS = 1
 
 # Model hyperparameters
 NUM_EPOCHS = 1

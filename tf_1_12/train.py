@@ -13,7 +13,7 @@ Datasets:
 Notes:
     - DCGAN: https://arxiv.org/pdf/1511.06434.pdf
     - gif => imagemagick
-    -
+    - Not using eager execution
 
 Things to examine:
 
@@ -27,8 +27,8 @@ import matplotlib.pyplot as plt
 
 import tensorflow as tf
 
-from parameters import *
-from model import build_generator, build_discriminator
+from tf_1_12.parameters import *
+from tf_1_12.model import build_generator, build_discriminator
 
 
 ################################################################################
@@ -42,11 +42,22 @@ def print_image(image):
 ################################################################################
 # Main
 if __name__ == "__main__":
+    """
     # enable eager execution
     tf.enable_eager_execution()
+    """
 
     # print out TF version
     print("TF version: {}".format(tf.__version__))
+
+    # create directory for checkpoints, results
+    dir_name = "Results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+
+    #
+    tf.reset_default_graph()
+    tf.keras.backend.set_learning_phase(1)  # 1=train, 0=test
 
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
@@ -64,7 +75,7 @@ if __name__ == "__main__":
     print("Shape of training images before reshape: {}".format(train_images[0].shape))
 
     train_images = train_images.reshape(
-        train_images.shape[0], num_rows, num_cols, num_channels
+        train_images.shape[0], IMAGE_ROWS, IMAGE_COLS, IMAGE_CHANNELS
     ).astype("float32")
 
     print("Shape of training images after reshape: {}".format(train_images[0].shape))
@@ -80,11 +91,22 @@ if __name__ == "__main__":
     print("Shape of batches: {}".format(train_dataset))
 
     # ----- MODEL ----- #
+    # Placeholders
+    real_image_pl = tf.placeholder(dtype=tf.float32,
+                                   shape=[None, IMAGE_ROWS, IMAGE_COLS, IMAGE_CHANNELS],
+                                   name="real_image_placeholder")
+
+    noise_pl = tf.placeholder(dtype=tf.float32,
+                              shape=[None, Z_DIM],
+                              name="noise_placeholder")
+
+    #
+    g_out = build_generator(noise_pl, reuse=False)
+
+    d_real_out = build_discriminator(real_image_pl, reuse=False)
+
+    d_fake_out = build_discriminator(g_out, reuse=True)
 
     # ----- TRAINING ----- #
-    # directory for save checkpoints, generated results
-    dir_name = "Results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name)
 
     # ----- GENERATE ----- #

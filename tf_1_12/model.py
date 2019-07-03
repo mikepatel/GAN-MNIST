@@ -12,7 +12,8 @@ Datasets:
 
 Notes:
     - DCGAN: https://arxiv.org/pdf/1511.06434.pdf
-    -
+    - http://superfluoussextant.com/making-gifs-with-python.html
+    - https://tomroelandts.com/articles/how-to-create-animated-gifs-with-python
 
 Things to examine:
 
@@ -20,7 +21,7 @@ Things to examine:
 ################################################################################
 # Imports
 import tensorflow as tf
-from parameters import *
+from tf_1_12.parameters import *
 
 
 ################################################################################
