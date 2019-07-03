@@ -80,23 +80,6 @@ if __name__ == "__main__":
     print("Shape of batches: {}".format(train_dataset))
 
     # ----- MODEL ----- #
-    g = build_generator()
-    d = build_discriminator()
-
-    # build gan model
-    d.trainable = False
-    gan = tf.keras.Sequential()
-    gan.add(g)
-    gan.add(d)
-
-    # configure model training
-    gan.compile(
-        loss=tf.keras.losses.binary_crossentropy,
-        optimizer=tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5),
-        metrics=["accuracy"]
-    )
-
-    gan.summary()
 
     # ----- TRAINING ----- #
     # directory for save checkpoints, generated results
@@ -104,55 +87,4 @@ if __name__ == "__main__":
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
 
-    model_file = os.path.join(dir_name, "model.h5")
-
-    # training loop
-    for epoch in range(NUM_EPOCHS+1):
-        # generator
-        noise_vector = np.random.normal(size=(BATCH_SIZE, Z_DIM))  # Gaussian noise
-        gen_images = g.predict(noise_vector)  # batch of generated images
-
-        # discriminator
-        idx = np.random.randint(low=0, high=len(train_images), size=BATCH_SIZE)
-        real_images = train_images[idx]  # batch of real images
-
-        # concatenate real and generated images for discriminator
-        d_images = np.concatenate((real_images, gen_images))
-
-        # labels "real", "fake"
-        real_labels = np.ones(shape=(BATCH_SIZE, 1))
-        fake_labels = np.zeros(shape=(BATCH_SIZE, 1))
-
-        # add random noise to labels
-
-        # concatentate labels
-        d_labels = np.concatenate((real_labels, fake_labels))
-
-        # train discriminator
-        d.trainable = True
-        d_loss = d.train_on_batch(d_images, d_labels)
-
-        # misleading labels for generator: "all these images are real" -- obviously a lie
-        misleading_labels = np.ones(shape=(BATCH_SIZE, 1))
-
-        # train generator
-        d.trainable = False
-        noise_vector = np.random.normal(size=(BATCH_SIZE, Z_DIM))  # Gaussian noise
-        g_loss = gan.train_on_batch(noise_vector, misleading_labels)
-
-        # print metrics
-        print("\nEpoch {}".format(epoch))
-        print("Discriminator :: Loss: {:.4f}, Accuracy: {:.4f}".format(d_loss[0], d_loss[1]))
-        print("Generator :: Loss: {:.4f}, Accuracy: {:.4f}".format(g_loss[0], g_loss[1]))
-
-        # generate during training
-        # save a generated image
-        image_file = os.path.join(dir_name, str(epoch) + "_gen.png")
-        image = tf.keras.preprocessing.image.array_to_img(gen_images[0] * 255., scale=False)
-        image.save(image_file)
-
-    # save model weights
-    gan.save(model_file)
-
     # ----- GENERATE ----- #
-    # load saved model weights

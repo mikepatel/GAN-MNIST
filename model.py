@@ -104,7 +104,7 @@ def build_discriminator():
         padding="same",
         input_shape=(28, 28, 1)
     ))
-    m.add(tf.keras.layers.LeakyReLU(0.2))
+    m.add(tf.keras.layers.LeakyReLU())
 
     #
     m.add(tf.keras.layers.Dropout(rate=0.3))  # fraction of input units to drop
@@ -116,7 +116,7 @@ def build_discriminator():
         strides=(2, 2),
         padding="same"
     ))
-    m.add(tf.keras.layers.LeakyReLU(0.2))
+    m.add(tf.keras.layers.LeakyReLU())
 
     #
     m.add(tf.keras.layers.Dropout(rate=0.3))
