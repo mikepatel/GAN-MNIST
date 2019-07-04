@@ -25,8 +25,45 @@ from tf_1_12.parameters import *
 
 
 ################################################################################
+# Leaky ReLU
+def my_leaky_relu(tensor):
+    return tf.nn.leaky_relu(tensor, alpha=0.2)
+
+
+################################################################################
 # Generator
-def build_generator():
+def build_generator(noise, reuse=False):
+    with tf.variable_scope("generator") as scope:
+        if reuse:
+            tf.get_variable_scope().reuse_variables()
+
+        #
+        t_input = noise
+
+        # Input layer
+        t = tf.layers.dense(
+            inputs=t_input,
+            units=7*7*512,
+            activation=my_leaky_relu
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        # Reshape layer
+
+        # Conv layer 1
+
+        # Conv layer 2
+
+        # Conv layer 3
+
+        # Conv layer 4
+
+        t_output = t
+
+        print("\nGenerator output shape: {}".format(t_output.shape))
+        return t_output
+
     """
     m = tf.keras.Sequential()
 

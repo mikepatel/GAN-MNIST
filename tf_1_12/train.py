@@ -14,6 +14,7 @@ Notes:
     - DCGAN: https://arxiv.org/pdf/1511.06434.pdf
     - gif => imagemagick
     - Not using eager execution
+    - https://www.tensorflow.org/versions/r1.12/api_docs/python/tf/reset_default_graph
 
 Things to examine:
 
