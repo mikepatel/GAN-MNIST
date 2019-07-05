@@ -37,7 +37,7 @@ def build_generator(noise, reuse=False):
         if reuse:
             tf.get_variable_scope().reuse_variables()
 
-        #
+        # Input
         t_input = noise
 
         # Input layer
@@ -50,15 +50,58 @@ def build_generator(noise, reuse=False):
         t = tf.layers.batch_normalization(inputs=t)
 
         # Reshape layer
+        t = tf.reshape(
+            tensor=t,
+            shape=[-1, 7, 7, 512]
+        )
 
         # Conv layer 1
+        t = tf.layers.conv2d_transpose(
+            inputs=t,
+            filters=512,
+            kernel_size=[5, 5],
+            strides=[1, 1],
+            padding="same",
+            activation=my_leaky_relu
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
 
         # Conv layer 2
+        t = tf.layers.conv2d_transpose(
+            inputs=t,
+            filters=256,
+            kernel_size=[5, 5],
+            strides=[1, 1],
+            padding="same",
+            activation=my_leaky_relu
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
 
         # Conv layer 3
+        t = tf.layers.conv2d_transpose(
+            inputs=t,
+            filters=128,
+            kernel_size=[5, 5],
+            strides=[2, 2],
+            padding="same",
+            activation=my_leaky_relu
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
 
         # Conv layer 4
+        t = tf.layers.conv2d_transpose(
+            inputs=t,
+            filters=1,
+            kernel_size=[5, 5],
+            strides=[2, 2],
+            padding="same",
+            activation=tf.tanh
+        )
 
+        # Output
         t_output = t
 
         print("\nGenerator output shape: {}".format(t_output.shape))
