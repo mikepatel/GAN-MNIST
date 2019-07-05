@@ -109,6 +109,20 @@ if __name__ == "__main__":
     d_fake_out = build_discriminator(g_out, reuse=True)
 
     # Loss functions
+    d_real_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
+        logits=d_real_out,
+        labels=tf.ones_like(d_real_out)
+    ))
+
+    d_fake_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
+        logits=d_fake_out,
+        labels=tf.zeros_like(d_fake_out)
+    ))
+
+    g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
+        logits=d_fake_out,
+        labels=tf.ones_like(d_fake_out)
+    ))
 
     # Optimizers
 
