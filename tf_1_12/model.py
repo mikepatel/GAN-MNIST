@@ -103,7 +103,7 @@ def build_generator(noise, reuse=False):
         # Output
         t_output = t
 
-        print("\nGenerator output shape: {}".format(t_output.shape))
+        print("Generator output shape: {}".format(t_output.shape))
         return t_output
 
     """
@@ -231,7 +231,7 @@ def build_discriminator(image, reuse=False):
 
         t_output = t
 
-        print("\nDiscriminator output shape: {}".format(t_output.shape))
+        print("Discriminator output shape: {}".format(t_output.shape))
         return t_output
 
     """

@@ -108,6 +108,13 @@ if __name__ == "__main__":
 
     d_fake_out = build_discriminator(g_out, reuse=True)
 
+    # Loss functions
+
+    # Optimizers
+
     # ----- TRAINING ----- #
+    # Session initialization and TensorBoard setup
+
+    # Training loop
 
     # ----- GENERATE ----- #
