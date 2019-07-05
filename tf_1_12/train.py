@@ -28,8 +28,8 @@ import matplotlib.pyplot as plt
 
 import tensorflow as tf
 
-from tf_1_12.parameters import *
-from tf_1_12.model import build_generator, build_discriminator
+from parameters import *
+from model import build_generator, build_discriminator
 
 
 ################################################################################
