@@ -176,7 +176,65 @@ def build_generator(noise, reuse=False):
 
 ################################################################################
 # Discriminator
-def build_discriminator():
+def build_discriminator(image, reuse=False):
+    with tf.variable_scope("discriminator") as scope:
+        if reuse:
+            tf.get_variable_scope().reuse_variables()
+
+        # Input
+        t_input = image
+
+        # Conv layer 1
+        t = tf.layers.conv2d(
+            inputs=t_input,
+            filters=64,
+            kernel_size=[5, 5],
+            strides=[2, 2],
+            padding="same",
+            activation=my_leaky_relu
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        # Dropout 1
+        t = tf.layers.dropout(
+            inputs=t,
+            rate=0.3
+        )
+
+        # Conv layer 2
+        t = tf.layers.conv2d(
+            inputs=t,
+            filters=128,
+            kernel_size=[5, 5],
+            strides=[2, 2],
+            padding="same",
+            activation=my_leaky_relu
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        # Dropout 2
+        t = tf.layers.dropout(
+            inputs=t,
+            rate=0.3
+        )
+
+        # Flatten
+        t = tf.layers.flatten(inputs=t)
+
+        # Output
+        t = tf.layers.dense(
+            inputs=t,
+            units=1,
+            activation=tf.sigmoid
+        )
+
+        t_output = t
+
+        print("\nDiscriminator output shape: {}".format(t_output.shape))
+        return t_output
+
     """
     m = tf.keras.Sequential()
 
