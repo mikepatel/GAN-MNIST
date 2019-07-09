@@ -119,12 +119,23 @@ if __name__ == "__main__":
         labels=tf.zeros_like(d_fake_out)
     ))
 
+    d_total_loss = d_real_loss + d_fake_loss
+
     g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
         logits=d_fake_out,
         labels=tf.ones_like(d_fake_out)
     ))
 
     # Optimizers
+    g_optimizer = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5).minimize(
+        loss=g_loss,
+        var_list=[tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="generator")]
+    )
+
+    d_optimizer = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5).minimize(
+        loss=d_total_loss,
+        var_list=[tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="discriminator")]
+    )
 
     # ----- TRAINING ----- #
     # Session initialization and TensorBoard setup
