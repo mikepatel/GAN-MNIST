@@ -139,6 +139,17 @@ if __name__ == "__main__":
 
     # ----- TRAINING ----- #
     # Session initialization and TensorBoard setup
+    sess = tf.Session()
+    tf.summary.scalar(name="Discriminator Loss", tensor=d_total_loss)
+    tf.summary.scalar(name="Generator Loss", tensor=g_loss)
+    tf.summary.image(
+        name="Generated Images",
+        tensor=build_generator(noise_pl, reuse=True),
+        max_outputs=20)
+
+    tb = tf.summary.merge_all()
+    tb_writer = tf.summary.FileWriter(logdir=dir_name, graph=sess.graph)
+    sess.run(tf.global_variables_initializer())
 
     # Training loop
 
