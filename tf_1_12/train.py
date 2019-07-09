@@ -152,5 +152,16 @@ if __name__ == "__main__":
     sess.run(tf.global_variables_initializer())
 
     # Training loop
+    for epoch in range(NUM_EPOCHS+1):
+        # Gaussian noise
+        noise = np.random.normal(size=(BATCH_SIZE, Z_DIM))
+
+        # discriminator
+
+        # generator
+
+        # print losses
+
+        # write to TensorBoard
 
     # ----- GENERATE ----- #
