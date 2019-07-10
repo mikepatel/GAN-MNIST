@@ -145,7 +145,7 @@ if __name__ == "__main__":
     tf.summary.image(
         name="Generated Images",
         tensor=build_generator(noise_pl, reuse=True),
-        max_outputs=20)
+        max_outputs=10)
 
     tb = tf.summary.merge_all()
     tb_writer = tf.summary.FileWriter(logdir=dir_name, graph=sess.graph)
@@ -185,5 +185,21 @@ if __name__ == "__main__":
         print("Generator Error: {:.4f}".format(g_error))
 
         # write to TensorBoard
+        if epoch % 100 == 0:
+            # Gaussian noise
+            noise = np.random.normal(size=(BATCH_SIZE, Z_DIM))
+
+            summary = sess.run(
+                fetches=tb,
+                feed_dict={
+                    real_image_pl: real_images,
+                    noise_pl: noise
+                }
+            )
+
+            tb_writer.add_summary(summary=summary, global_step=epoch)
+
+    # end of training loop
+    # save model
 
     # ----- GENERATE ----- #
