@@ -153,14 +153,36 @@ if __name__ == "__main__":
 
     # Training loop
     for epoch in range(NUM_EPOCHS+1):
+        # Discriminator
+        indices = np.random.randint(low=0, high=len(train_images), size=BATCH_SIZE)
+        real_images = train_images[indices]
+
         # Gaussian noise
         noise = np.random.normal(size=(BATCH_SIZE, Z_DIM))
 
-        # discriminator
+        d_error, _ = sess.run(
+            fetches=[d_total_loss, d_optimizer],
+            feed_dict={
+                real_image_pl: real_images,
+                noise_pl: noise
+            }
+        )
 
-        # generator
+        # Generator
+        # Gaussian noise
+        noise = np.random.normal(size=(BATCH_SIZE, Z_DIM))
+
+        g_error, _ = sess.run(
+            fetches=[g_loss, g_optimizer],
+            feed_dict={
+                noise_pl: noise
+            }
+        )
 
         # print losses
+        print("\nEpoch: {}".format(epoch))
+        print("Discriminator Error: {:.4f}".format(d_error))
+        print("Generator Error: {:.4f}".format(g_error))
 
         # write to TensorBoard
 
