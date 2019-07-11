@@ -182,6 +182,7 @@ def build_discriminator(image, reuse=False):
             inputs=t_input,
             filters=64,
             kernel_size=[3, 3],
+            kernel_initializer=tf.initializers.random_normal(stddev=0.02),
             strides=[2, 2],
             padding="same",
             activation=my_leaky_relu
@@ -200,6 +201,7 @@ def build_discriminator(image, reuse=False):
             inputs=t,
             filters=128,
             kernel_size=[3, 3],
+            kernel_initializer=tf.initializers.random_normal(stddev=0.02),
             strides=[2, 2],
             padding="same",
             activation=my_leaky_relu
