@@ -45,6 +45,7 @@ def build_generator(noise, reuse=False):
         t = tf.layers.dense(
             inputs=t_input,
             units=7*7*512,
+            kernel_initializer=tf.initializers.random_normal(stddev=0.02),
             activation=tf.nn.relu
         )
 
@@ -61,6 +62,7 @@ def build_generator(noise, reuse=False):
             inputs=t,
             filters=256,
             kernel_size=[3, 3],
+            kernel_initializer=tf.initializers.random_normal(stddev=0.02),
             strides=[2, 2],
             padding="same",
             activation=tf.nn.relu
@@ -73,6 +75,7 @@ def build_generator(noise, reuse=False):
             inputs=t,
             filters=128,
             kernel_size=[3, 3],
+            kernel_initializer=tf.initializers.random_normal(stddev=0.02),
             strides=[2, 2],
             padding="same",
             activation=tf.nn.relu
@@ -85,6 +88,7 @@ def build_generator(noise, reuse=False):
             inputs=t,
             filters=1,
             kernel_size=[3, 3],
+            kernel_initializer=tf.initializers.random_normal(stddev=0.02),
             strides=[1, 1],
             padding="same",
             activation=tf.tanh
