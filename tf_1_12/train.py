@@ -84,6 +84,8 @@ if __name__ == "__main__":
     # Normalize images to [-1, 1] - tanh activation
     train_images = (train_images - 127.5) / 127.5
 
+    print("Size of training dataset: {}".format(len(train_images)))
+
     # use tf.data.Dataset to create batches and shuffle => TF model
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images)
     train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE)
@@ -103,6 +105,7 @@ if __name__ == "__main__":
 
     # placeholder inputs to the models
     g_out = build_generator(noise_pl, reuse=False)
+    quit()
 
     d_real_out = build_discriminator(real_image_pl, reuse=False)
 
@@ -119,7 +122,7 @@ if __name__ == "__main__":
         labels=tf.zeros_like(d_fake_out)
     ))
 
-    d_total_loss = d_real_loss + d_fake_loss
+    d_total_loss = tf.add(d_real_loss, d_fake_loss)
 
     g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
         logits=d_fake_out,
@@ -127,12 +130,12 @@ if __name__ == "__main__":
     ))
 
     # Optimizers
-    g_optimizer = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5).minimize(
+    g_optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE, beta1=BETA_1).minimize(
         loss=g_loss,
         var_list=[tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="generator")]
     )
 
-    d_optimizer = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5).minimize(
+    d_optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE, beta1=BETA_1).minimize(
         loss=d_total_loss,
         var_list=[tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="discriminator")]
     )
@@ -145,7 +148,7 @@ if __name__ == "__main__":
     tf.summary.image(
         name="Generated Images",
         tensor=build_generator(noise_pl, reuse=True),
-        max_outputs=10)
+        max_outputs=NUM_GEN)
 
     tb = tf.summary.merge_all()
     tb_writer = tf.summary.FileWriter(logdir=dir_name, graph=sess.graph)
@@ -179,13 +182,13 @@ if __name__ == "__main__":
             }
         )
 
-        # print losses
-        print("\nEpoch: {}".format(epoch))
-        print("Discriminator Error: {:.4f}".format(d_error))
-        print("Generator Error: {:.4f}".format(g_error))
-
-        # write to TensorBoard
         if epoch % 100 == 0:
+            # print losses
+            print("\nEpoch: {}".format(epoch))
+            print("Discriminator Error: {:.4f}".format(d_error))
+            print("Generator Error: {:.4f}".format(g_error))
+
+            # write to TensorBoard
             # Gaussian noise
             noise = np.random.normal(size=(BATCH_SIZE, Z_DIM))
 

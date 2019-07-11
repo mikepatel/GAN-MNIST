@@ -22,6 +22,8 @@ Things to examine:
 # Imports
 import tensorflow as tf
 
+from parameters import DROPOUT_RATE
+
 
 ################################################################################
 # Leaky ReLU
@@ -43,7 +45,7 @@ def build_generator(noise, reuse=False):
         t = tf.layers.dense(
             inputs=t_input,
             units=7*7*512,
-            activation=my_leaky_relu
+            activation=tf.nn.relu
         )
 
         t = tf.layers.batch_normalization(inputs=t)
@@ -57,11 +59,11 @@ def build_generator(noise, reuse=False):
         # Conv layer 1
         t = tf.layers.conv2d_transpose(
             inputs=t,
-            filters=512,
+            filters=256,
             kernel_size=[5, 5],
-            strides=[1, 1],
+            strides=[2, 2],
             padding="same",
-            activation=my_leaky_relu
+            activation=tf.nn.relu
         )
 
         t = tf.layers.batch_normalization(inputs=t)
@@ -69,11 +71,11 @@ def build_generator(noise, reuse=False):
         # Conv layer 2
         t = tf.layers.conv2d_transpose(
             inputs=t,
-            filters=256,
+            filters=128,
             kernel_size=[5, 5],
-            strides=[1, 1],
+            strides=[2, 2],
             padding="same",
-            activation=my_leaky_relu
+            activation=tf.nn.relu
         )
 
         t = tf.layers.batch_normalization(inputs=t)
@@ -81,21 +83,9 @@ def build_generator(noise, reuse=False):
         # Conv layer 3
         t = tf.layers.conv2d_transpose(
             inputs=t,
-            filters=128,
-            kernel_size=[5, 5],
-            strides=[2, 2],
-            padding="same",
-            activation=my_leaky_relu
-        )
-
-        t = tf.layers.batch_normalization(inputs=t)
-
-        # Conv layer 4
-        t = tf.layers.conv2d_transpose(
-            inputs=t,
             filters=1,
             kernel_size=[5, 5],
-            strides=[2, 2],
+            strides=[1, 1],
             padding="same",
             activation=tf.tanh
         )
@@ -198,7 +188,7 @@ def build_discriminator(image, reuse=False):
         # Dropout 1
         t = tf.layers.dropout(
             inputs=t,
-            rate=0.3
+            rate=DROPOUT_RATE
         )
 
         # Conv layer 2
@@ -216,7 +206,7 @@ def build_discriminator(image, reuse=False):
         # Dropout 2
         t = tf.layers.dropout(
             inputs=t,
-            rate=0.3
+            rate=DROPOUT_RATE
         )
 
         # Flatten
