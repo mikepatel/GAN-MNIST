@@ -105,7 +105,6 @@ if __name__ == "__main__":
 
     # placeholder inputs to the models
     g_out = build_generator(noise_pl, reuse=False)
-    quit()
 
     d_real_out = build_discriminator(real_image_pl, reuse=False)
 
