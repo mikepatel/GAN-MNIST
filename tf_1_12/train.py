@@ -72,15 +72,14 @@ if __name__ == "__main__":
     quit()
     '''
 
-    # Reshape: ~~(28, 28) => (28, 28, 1)~~
+    # Reshape: ~~(28, 28) --> (28, 28, 1)~~
     print("Shape of training images before reshape: {}".format(train_images[0].shape))
-
-
 
     train_images = train_images.reshape(
         train_images.shape[0], 28, 28, IMAGE_CHANNELS
     ).astype("float32")
 
+    # Resizing: (28, 28, 1) --> (64, 64, 1)
     train_images = tf.image.resize_images(images=train_images, size=[64, 64])
 
     print("Shape of training images after reshape: {}".format(train_images[0].shape))
@@ -114,8 +113,6 @@ if __name__ == "__main__":
 
     d_fake_out = build_discriminator(g_out, reuse=True)
 
-    quit()
-
     # Loss functions
     d_real_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
         logits=d_real_out,
@@ -144,6 +141,8 @@ if __name__ == "__main__":
         loss=d_total_loss,
         var_list=[tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="discriminator")]
     )
+
+    quit()
 
     # ----- TRAINING ----- #
     # Session initialization and TensorBoard setup
