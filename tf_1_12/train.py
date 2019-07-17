@@ -74,25 +74,22 @@ if __name__ == "__main__":
 
     # Reshape: ~~(28, 28) --> (28, 28, 1)~~
     print("Shape of training images before reshape: {}".format(train_images[0].shape))
-    print(type(train_images[0]))
 
     train_images = train_images.reshape(
         train_images.shape[0], 28, 28, IMAGE_CHANNELS
     ).astype("float32")
 
     # Resizing: (28, 28, 1) --> (64, 64, 1)
-    s = tf.InteractiveSession()
-    train_images = tf.image.resize_images(images=train_images, size=[64, 64]).eval(session=s)
+    train_images = tf.image.resize_images(images=train_images, size=[64, 64]).eval(session=tf.InteractiveSession())
 
     print("Shape of training images after reshape: {}".format(train_images[0].shape))
 
     # Normalize images to [-1, 1] - tanh activation
     train_images = (train_images - 127.5) / 127.5
 
-    print(type(train_images[0]))
-
     print("Size of training dataset: {}".format(train_images.shape[0]))
 
+    # ? Needed ?
     # use tf.data.Dataset to create batches and shuffle => TF model
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images)
     train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE)
