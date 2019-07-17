@@ -74,18 +74,22 @@ if __name__ == "__main__":
 
     # Reshape: ~~(28, 28) --> (28, 28, 1)~~
     print("Shape of training images before reshape: {}".format(train_images[0].shape))
+    print(type(train_images[0]))
 
     train_images = train_images.reshape(
         train_images.shape[0], 28, 28, IMAGE_CHANNELS
     ).astype("float32")
 
     # Resizing: (28, 28, 1) --> (64, 64, 1)
-    train_images = tf.image.resize_images(images=train_images, size=[64, 64])
+    s = tf.InteractiveSession()
+    train_images = tf.image.resize_images(images=train_images, size=[64, 64]).eval(session=s)
 
     print("Shape of training images after reshape: {}".format(train_images[0].shape))
 
     # Normalize images to [-1, 1] - tanh activation
     train_images = (train_images - 127.5) / 127.5
+
+    print(type(train_images[0]))
 
     print("Size of training dataset: {}".format(train_images.shape[0]))
 
@@ -142,8 +146,6 @@ if __name__ == "__main__":
         var_list=[tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="discriminator")]
     )
 
-    quit()
-
     # ----- TRAINING ----- #
     # Session initialization and TensorBoard setup
     sess = tf.Session()
@@ -161,11 +163,11 @@ if __name__ == "__main__":
     # Training loop
     for epoch in range(NUM_EPOCHS+1):
         # Discriminator
-        indices = np.random.randint(low=0, high=len(train_images), size=BATCH_SIZE)
+        indices = np.random.randint(low=0, high=60000, size=BATCH_SIZE)
         real_images = train_images[indices]
 
         # Gaussian noise
-        noise = np.random.normal(size=(BATCH_SIZE, Z_DIM))
+        noise = np.random.normal(size=(BATCH_SIZE, 1, 1, Z_DIM))
 
         d_error, _ = sess.run(
             fetches=[d_total_loss, d_optimizer],
@@ -177,7 +179,7 @@ if __name__ == "__main__":
 
         # Generator
         # Gaussian noise
-        noise = np.random.normal(size=(BATCH_SIZE, Z_DIM))
+        noise = np.random.normal(size=(BATCH_SIZE, 1, 1, Z_DIM))
 
         g_error, _ = sess.run(
             fetches=[g_loss, g_optimizer],
@@ -189,7 +191,7 @@ if __name__ == "__main__":
         if epoch % 100 == 0:
             # write to TensorBoard
             # Gaussian noise
-            noise = np.random.normal(size=(BATCH_SIZE, Z_DIM))
+            noise = np.random.normal(size=(BATCH_SIZE, 1, 1, Z_DIM))
 
             summary = sess.run(
                 fetches=tb,
