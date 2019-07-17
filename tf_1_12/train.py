@@ -72,19 +72,23 @@ if __name__ == "__main__":
     quit()
     '''
 
-    # Reshape: (28, 28) => (28, 28, 1)
+    # Reshape: ~~(28, 28) => (28, 28, 1)~~
     print("Shape of training images before reshape: {}".format(train_images[0].shape))
 
+
+
     train_images = train_images.reshape(
-        train_images.shape[0], IMAGE_ROWS, IMAGE_COLS, IMAGE_CHANNELS
+        train_images.shape[0], 28, 28, IMAGE_CHANNELS
     ).astype("float32")
+
+    train_images = tf.image.resize_images(images=train_images, size=[64, 64])
 
     print("Shape of training images after reshape: {}".format(train_images[0].shape))
 
     # Normalize images to [-1, 1] - tanh activation
     train_images = (train_images - 127.5) / 127.5
 
-    print("Size of training dataset: {}".format(len(train_images)))
+    print("Size of training dataset: {}".format(train_images.shape[0]))
 
     # use tf.data.Dataset to create batches and shuffle => TF model
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images)
@@ -96,11 +100,11 @@ if __name__ == "__main__":
     # ----- MODEL ----- #
     # Placeholders
     real_image_pl = tf.placeholder(dtype=tf.float32,
-                                   shape=[None, IMAGE_ROWS, IMAGE_COLS, IMAGE_CHANNELS],
+                                   shape=[None, 64, 64, IMAGE_CHANNELS],
                                    name="real_image_placeholder")
 
     noise_pl = tf.placeholder(dtype=tf.float32,
-                              shape=[None, Z_DIM],
+                              shape=[None, 1, 1, Z_DIM],
                               name="noise_placeholder")
 
     # placeholder inputs to the models
@@ -109,6 +113,8 @@ if __name__ == "__main__":
     d_real_out = build_discriminator(real_image_pl, reuse=False)
 
     d_fake_out = build_discriminator(g_out, reuse=True)
+
+    quit()
 
     # Loss functions
     d_real_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(

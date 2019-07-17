@@ -41,6 +41,76 @@ def build_generator(noise, reuse=False):
         # Input
         t_input = noise
 
+        # Layer 1
+        t = tf.layers.conv2d_transpose(
+            inputs=t_input,
+            filters=1024,
+            kernel_size=[4, 4],
+            strides=(1, 1),
+            padding="valid"
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        t = tf.nn.leaky_relu(features=t, alpha=LEAKY_ALPHA)
+
+        # Layer 2
+        t = tf.layers.conv2d_transpose(
+            inputs=t,
+            filters=512,
+            kernel_size=[4, 4],
+            strides=(2, 2),
+            padding="same"
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        t = tf.nn.leaky_relu(features=t, alpha=LEAKY_ALPHA)
+
+        # Layer 3
+        t = tf.layers.conv2d_transpose(
+            inputs=t,
+            filters=256,
+            kernel_size=[4, 4],
+            strides=(2, 2),
+            padding="same"
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        t = tf.nn.leaky_relu(features=t, alpha=LEAKY_ALPHA)
+
+        # Layer 4
+        t = tf.layers.conv2d_transpose(
+            inputs=t,
+            filters=128,
+            kernel_size=[4, 4],
+            strides=(2, 2),
+            padding="same"
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        t = tf.nn.leaky_relu(features=t, alpha=LEAKY_ALPHA)
+
+        # Layer 5
+        t = tf.layers.conv2d_transpose(
+            inputs=t,
+            filters=1,
+            kernel_size=[4, 4],
+            strides=(2, 2),
+            padding="same"
+        )
+
+        t = tf.nn.tanh(t)
+
+        # Output
+        t_output = t
+
+        print("Generator output shape: {}".format(t_output.shape))
+        return t_output
+
+        """
         # Input layer
         t = tf.layers.dense(
             inputs=t_input,
@@ -103,6 +173,7 @@ def build_generator(noise, reuse=False):
 
         print("Generator output shape: {}".format(t_output.shape))
         return t_output
+        """
 
     """
     m = tf.keras.Sequential()
@@ -181,6 +252,75 @@ def build_discriminator(image, reuse=False):
         # Input
         t_input = image
 
+        # Layer 1
+        t = tf.layers.conv2d(
+            inputs=t_input,
+            filters=128,
+            kernel_size=[4, 4],
+            strides=(2, 2),
+            padding="same"
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        t = tf.nn.leaky_relu(features=t, alpha=LEAKY_ALPHA)
+
+        # Layer 2
+        t = tf.layers.conv2d(
+            inputs=t,
+            filters=256,
+            kernel_size=[4, 4],
+            strides=(2, 2),
+            padding="same"
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        t = tf.nn.leaky_relu(features=t, alpha=LEAKY_ALPHA)
+
+        # Layer 3
+        t = tf.layers.conv2d(
+            inputs=t,
+            filters=512,
+            kernel_size=[4, 4],
+            strides=(2, 2),
+            padding="same"
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        t = tf.nn.leaky_relu(features=t, alpha=LEAKY_ALPHA)
+
+        # Layer 4
+        t = tf.layers.conv2d(
+            inputs=t,
+            filters=1024,
+            kernel_size=[4, 4],
+            strides=(2, 2),
+            padding="same"
+        )
+
+        t = tf.layers.batch_normalization(inputs=t)
+
+        t = tf.nn.leaky_relu(features=t, alpha=LEAKY_ALPHA)
+
+        # Layer 5
+        t = tf.layers.conv2d(
+            inputs=t,
+            filters=1,
+            kernel_size=[4, 4],
+            strides=(1, 1),
+            padding="valid"
+        )
+
+        t = tf.nn.sigmoid(t)
+
+        t_output = t
+
+        print("Discriminator output shape: {}".format(t_output.shape))
+        return t_output
+
+        """
         # Conv layer 1
         t = tf.layers.conv2d(
             inputs=t_input,
@@ -230,11 +370,9 @@ def build_discriminator(image, reuse=False):
             units=1,
             activation=tf.sigmoid
         )
+        """
 
-        t_output = t
 
-        print("Discriminator output shape: {}".format(t_output.shape))
-        return t_output
 
     """
     m = tf.keras.Sequential()
