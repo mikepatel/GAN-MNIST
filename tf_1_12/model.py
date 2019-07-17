@@ -22,13 +22,13 @@ Things to examine:
 # Imports
 import tensorflow as tf
 
-from parameters import DROPOUT_RATE
+from parameters import DROPOUT_RATE, LEAKY_ALPHA
 
 
 ################################################################################
 # Leaky ReLU
 def my_leaky_relu(tensor):
-    return tf.nn.leaky_relu(tensor, alpha=0.2)
+    return tf.nn.leaky_relu(tensor, alpha=LEAKY_ALPHA)
 
 
 ################################################################################
@@ -45,7 +45,8 @@ def build_generator(noise, reuse=False):
         t = tf.layers.dense(
             inputs=t_input,
             units=7*7*512,
-            #kernel_initializer=tf.initializers.random_normal(stddev=0.02),
+            kernel_initializer=tf.initializers.random_normal(stddev=0.02),
+            #kernel_initializer=tf.initializers.glorot_normal,
             activation=tf.nn.relu
         )
 
@@ -63,6 +64,7 @@ def build_generator(noise, reuse=False):
             filters=256,
             kernel_size=[3, 3],
             kernel_initializer=tf.initializers.random_normal(stddev=0.02),
+            #kernel_initializer=tf.initializers.glorot_normal,
             strides=[2, 2],
             padding="same",
             activation=tf.nn.relu
@@ -76,6 +78,7 @@ def build_generator(noise, reuse=False):
             filters=128,
             kernel_size=[3, 3],
             kernel_initializer=tf.initializers.random_normal(stddev=0.02),
+            #kernel_initializer=tf.initializers.glorot_normal,
             strides=[2, 2],
             padding="same",
             activation=tf.nn.relu
@@ -89,6 +92,7 @@ def build_generator(noise, reuse=False):
             filters=1,
             kernel_size=[3, 3],
             kernel_initializer=tf.initializers.random_normal(stddev=0.02),
+            #kernel_initializer=tf.initializers.glorot_normal,
             strides=[1, 1],
             padding="same",
             activation=tf.tanh
@@ -183,6 +187,7 @@ def build_discriminator(image, reuse=False):
             filters=64,
             kernel_size=[3, 3],
             kernel_initializer=tf.initializers.random_normal(stddev=0.02),
+            #kernel_initializer=tf.initializers.glorot_normal,
             strides=[2, 2],
             padding="same",
             activation=my_leaky_relu
@@ -202,6 +207,7 @@ def build_discriminator(image, reuse=False):
             filters=128,
             kernel_size=[3, 3],
             kernel_initializer=tf.initializers.random_normal(stddev=0.02),
+            #kernel_initializer=tf.initializers.glorot_normal,
             strides=[2, 2],
             padding="same",
             activation=my_leaky_relu

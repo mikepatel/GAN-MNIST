@@ -129,12 +129,12 @@ if __name__ == "__main__":
     ))
 
     # Optimizers
-    g_optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE, beta1=BETA_1).minimize(
+    g_optimizer = tf.train.AdamOptimizer(learning_rate=G_LEARNING_RATE, beta1=BETA_1).minimize(
         loss=g_loss,
         var_list=[tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="generator")]
     )
 
-    d_optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE, beta1=BETA_1).minimize(
+    d_optimizer = tf.train.AdamOptimizer(learning_rate=D_LEARNING_RATE, beta1=BETA_1).minimize(
         loss=d_total_loss,
         var_list=[tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="discriminator")]
     )
@@ -182,11 +182,6 @@ if __name__ == "__main__":
         )
 
         if epoch % 100 == 0:
-            # print losses
-            print("\nEpoch: {}".format(epoch))
-            print("Discriminator Error: {:.4f}".format(d_error))
-            print("Generator Error: {:.4f}".format(g_error))
-
             # write to TensorBoard
             # Gaussian noise
             noise = np.random.normal(size=(BATCH_SIZE, Z_DIM))
@@ -200,6 +195,11 @@ if __name__ == "__main__":
             )
 
             tb_writer.add_summary(summary=summary, global_step=epoch)
+
+            # print losses
+            print("\nEpoch: {}".format(epoch))
+            print("Discriminator Error: {:.4f}".format(d_error))
+            print("Generator Error: {:.4f}".format(g_error))
 
     # end of training loop
     # save model
