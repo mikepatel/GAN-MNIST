@@ -5,18 +5,8 @@ June 2019
 Python 3.6.5
 TF 1.12.0
 
-Project description:
-
-Datasets:
-    - MNIST
-
-Notes:
-    - DCGAN: https://arxiv.org/pdf/1511.06434.pdf
-    - http://superfluoussextant.com/making-gifs-with-python.html
-    - https://tomroelandts.com/articles/how-to-create-animated-gifs-with-python
-
-Things to examine:
-
+File description:
+    For model definitions for Generator and Discriminator
 """
 ################################################################################
 # Imports

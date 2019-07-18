@@ -6,6 +6,10 @@ Python 3.6.5
 TF 1.12.0
 
 Project description:
+    For GAN research, specifically focused on model building and training
+
+File description:
+    For preprocessing and training algorithm
 
 Datasets:
     - MNIST
@@ -17,6 +21,8 @@ Notes:
     - https://www.tensorflow.org/versions/r1.12/api_docs/python/tf/reset_default_graph
 
 Things to examine:
+    - Preprocessing
+        - resizing images to 64x64
 
 """
 ################################################################################
@@ -80,7 +86,10 @@ if __name__ == "__main__":
     ).astype("float32")
 
     # Resizing: (28, 28, 1) --> (64, 64, 1)
-    train_images = tf.image.resize_images(images=train_images, size=[64, 64]).eval(session=tf.InteractiveSession())
+    train_images = tf.image.resize_images(
+        images=train_images,
+        size=[64, 64]
+    ).eval(session=tf.InteractiveSession())
 
     print("Shape of training images after reshape: {}".format(train_images[0].shape))
 
