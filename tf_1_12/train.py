@@ -60,3 +60,13 @@ if __name__ == "__main__":
     # Normalize images to [-1, 1] --- tanh activation
     train_images = (train_images - 127.5) / 127.5
 
+    # use tf.data.Dataset to create batches and shuffle --> data pipeline to TF model
+    train_dataset = tf.data.Dataset.from_tensor_slices(train_images)
+    train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE)
+    train_dataset = train_dataset.batch(batch_size=BATCH_SIZE)
+
+    print("Shape of batches: {}".format(train_dataset.output_shapes))
+
+    # ----- MODEL ----- #
+    
+
