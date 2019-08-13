@@ -16,6 +16,22 @@ Dataset: MNIST handwritten digits
 
 """
 ################################################################################
-# Imports
+# based on MNIST images: 28x28 greyscale
+IMAGE_ROWS = 28
+IMAGE_COLS = 28
+IMAGE_CHANNELS = 1
 
-################################################################################
+# Training
+NUM_EPOCHS = 1
+BATCH_SIZE = 64
+BUFFER_SIZE = 60000  # size of training set
+NUM_GEN_IMAGES = 10
+G_LEARNING_RATE = 0.0001
+D_LEARNING_RATE = 0.0001
+BETA_1 = 0.5
+
+# Model
+NOISE_DIM = 100
+DROPOUT_RATE = 0.5
+LEAKY_ALPHA = 0.3
+
