@@ -57,6 +57,22 @@ def g_loss(generated_output):
     return generated_loss
 
 
+# Generate and Save Images
+def generate_and_save_images(model, epoch, test_input):
+    # set training parameter to False b/c don't want to train batchnorm layer when doing inference
+    predictions = model(test_input, training=False)
+
+    fig = plt.figure(figsize=(4, 4))
+
+    for i in range(predictions.shape[0]):
+        plt.subplot(4, 4, i+1),
+        plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap="gray")
+        plt.axis("off")
+
+    plt.savefig("Epoch {:04d}.png".format(epoch))
+    plt.show()
+
+
 ################################################################################
 # Main
 if __name__ == "__main__":
@@ -121,4 +137,7 @@ if __name__ == "__main__":
     )
 
     # ----- TRAINING ----- #
-    
+    # keep random vector constant for generation to track gan improvement easier
+    random_vector_for_generation = tf.random_normal(shape=[NUM_GEN_IMAGES, NOISE_DIM])
+
+
