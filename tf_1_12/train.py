@@ -30,6 +30,34 @@ from model import Generator, Discriminator
 
 
 ################################################################################
+# Discriminator Loss
+def d_loss(real_output, generated_output):
+    real_loss = tf.losses.sigmoid_cross_entropy(
+        multi_class_labels=tf.ones_like(real_output),
+        logits=real_output
+    )
+
+    generated_loss = tf.losses.sigmoid_cross_entropy(
+        multi_class_labels=tf.zeros_like(generated_output),
+        logits=generated_output
+    )
+
+    total_loss = real_loss + generated_loss
+
+    return total_loss
+
+
+# Generator Loss
+def g_loss(generated_output):
+    generated_loss = tf.losses.sigmoid_cross_entropy(
+        multi_class_labels=tf.ones_like(generated_output),
+        logits=generated_output
+    )
+
+    return generated_loss
+
+
+################################################################################
 # Main
 if __name__ == "__main__":
     """
@@ -78,5 +106,19 @@ if __name__ == "__main__":
     d.call = tf.contrib.eager.defun(d.call)
     """
 
-    
+    # Optimizers
+    d_optimizer = tf.train.AdamOptimizer(learning_rate=D_LEARNING_RATE)
+    g_optimizer = tf.train.AdamOptimizer(learning_rate=G_LEARNING_RATE)
 
+    # Checkpoints
+    checkpoint_dir = "./training_checkpoints"
+    checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
+    checkpoint = tf.train.Checkpoint(
+        g_optimizer=g_optimizer,
+        d_optimizer=d_optimizer,
+        g=g,
+        d=d
+    )
+
+    # ----- TRAINING ----- #
+    
