@@ -19,6 +19,8 @@ Dataset: MNIST handwritten digits
 # Imports
 import tensorflow as tf
 
+from parameters import DROPOUT_RATE
+
 
 ################################################################################
 # Generator
@@ -106,7 +108,7 @@ class Discriminator(tf.keras.Model):
         )
 
         # Dropout layer
-        self.dropout = tf.keras.layers.Dropout(0.3)
+        self.dropout = tf.keras.layers.Dropout(rate=DROPOUT_RATE)
 
         # Flattening layer
         self.flatten = tf.keras.layers.Flatten()
