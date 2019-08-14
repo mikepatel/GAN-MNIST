@@ -26,6 +26,7 @@ import imageio  # generate gifs
 import tensorflow as tf
 
 from parameters import *
+from model import Generator, Discriminator
 
 
 ################################################################################
@@ -68,5 +69,14 @@ if __name__ == "__main__":
     print("Shape of batches: {}".format(train_dataset.output_shapes))
 
     # ----- MODEL ----- #
+    g = Generator()
+    d = Discriminator()
+
+    """
+    # defun gives 10s per epoch performance boost
+    g.call = tf.contrib.eager.defun(g.call)
+    d.call = tf.contrib.eager.defun(d.call)
+    """
+
     
 
