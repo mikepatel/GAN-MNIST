@@ -79,7 +79,7 @@ def generate_and_save_images(model, epoch, test_input):
 
 # Training
 def train(dataset, epochs, noise_dim, d, g):
-    for epoch in range(epochs+1):
+    for epoch in range(epochs):
         start = time.time()
 
         for images in dataset:
@@ -119,8 +119,7 @@ def train(dataset, epochs, noise_dim, d, g):
 
 # Display an image
 def display_image(epoch_number):
-    image_file = os.path.join(os.getcwd(), "image_at_epoch_{:04d}.png".format(epoch_number))
-    return PIL.Image.open(image_file)
+    return PIL.Image.open("Epoch {:04d}.png".format(epoch_number))
 
 
 ################################################################################
@@ -213,10 +212,10 @@ if __name__ == "__main__":
             image = imageio.imread(filename)
             writer.append_data(image)
 
-        image = imageio.imread(filename)
-        writer.append_data(image)
+        #image = imageio.imread(filename)
+        #writer.append_data(image)
 
     # hack to display gif inside notebook
-    os.system("cp dcgan.gif dcgan.gif.png")
+    #os.system("cp dcgan.gif dcgan.gif.png")
 
-    display.Image(filename="dcgan.gif.png")
+    #display.Image(filename="dcgan.gif.png")
