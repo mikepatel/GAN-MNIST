@@ -74,7 +74,7 @@ def generate_and_save_images(model, epoch, test_input):
         plt.axis("off")
 
     plt.savefig("Epoch {:04d}.png".format(epoch))
-    plt.show()
+    #plt.show()
 
 
 # Training
@@ -195,12 +195,14 @@ if __name__ == "__main__":
 
     # Generate gif of all saved images
     with imageio.get_writer("dcgan.gif", mode="I") as writer:
-        filenames = glob.glob("image*.png")
+        filenames = glob.glob("Epoch*.png")
         filenames = sorted(filenames)
 
         last = -1
 
         for i, filename in enumerate(filenames):
+            print(i)
+            print(filename)
             frame = 2*(i**0.5)
 
             if round(frame) > round(last):
