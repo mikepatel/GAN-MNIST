@@ -1,19 +1,18 @@
 """
 Michael Patel
-June 2019
+August 2019
 
 Python 3.6.5
-TF 1.12.0
+TensorFlow 1.12.0
 
 Project description:
+   To conduct GAN experimentation for learning purposes.
+   Based on the DCGAN paper: https://arxiv.org/pdf/1511.06434.pdf
 
-Datasets:
-    - MNIST
+File description:
+    To hold constants and model hyperparameters
 
-Notes:
-    - DCGAN: https://arxiv.org/pdf/1511.06434.pdf
-
-Things to examine:
+Dataset: MNIST handwritten digits
 
 """
 ################################################################################
@@ -22,9 +21,17 @@ IMAGE_ROWS = 28
 IMAGE_COLS = 28
 IMAGE_CHANNELS = 1
 
-# Model hyperparameters
+# Training
 NUM_EPOCHS = 1
 BATCH_SIZE = 64
 BUFFER_SIZE = 60000  # size of training set
-Z_DIM = 100
-NUM_GEN = 16
+NUM_GEN_IMAGES = 16
+G_LEARNING_RATE = 0.0001
+D_LEARNING_RATE = 0.0001
+BETA_1 = 0.5
+
+# Model
+NOISE_DIM = 100
+DROPOUT_RATE = 0.3
+LEAKY_ALPHA = 0.3
+
