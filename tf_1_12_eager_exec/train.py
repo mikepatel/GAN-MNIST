@@ -201,8 +201,6 @@ if __name__ == "__main__":
         last = -1
 
         for i, filename in enumerate(filenames):
-            print(i)
-            print(filename)
             frame = 2*(i**0.5)
 
             if round(frame) > round(last):
