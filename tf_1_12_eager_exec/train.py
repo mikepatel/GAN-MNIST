@@ -19,7 +19,6 @@ Dataset: MNIST handwritten digits
 # Imports
 import os
 from datetime import datetime
-import numpy as np
 import time
 import matplotlib.pyplot as plt
 import imageio  # generate gifs
@@ -107,7 +106,7 @@ def train(dataset, epochs, noise_dim, d, g):
             generate_and_save_images(g, epoch+1, random_vector_for_generation)
 
         # save checkpoint
-        if (epoch+1) % 15 == 0:
+        if (epoch+1) % 50 == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
 
         print("Time taken for epoch {} is {}s".format(epoch+1, time.time()-start))
@@ -172,7 +171,8 @@ if __name__ == "__main__":
     g_optimizer = tf.train.AdamOptimizer(learning_rate=G_LEARNING_RATE)
 
     # Checkpoints
-    checkpoint_dir = "./training_checkpoints"
+    #checkpoint_dir = "./training_checkpoints"
+    checkpoint_dir = os.getcwd()
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
     checkpoint = tf.train.Checkpoint(
         g_optimizer=g_optimizer,
