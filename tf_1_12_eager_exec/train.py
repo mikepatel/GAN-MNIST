@@ -109,7 +109,7 @@ def train(dataset, epochs, noise_dim, discriminator, generator, save_dir):
             generate_and_save_images(g, epoch+1, random_vector_for_generation, save_dir)
 
         # save checkpoints
-        if (epoch+1) % 1 == 0:
+        if (epoch+1) % NUM_EPOCHS == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
 
         print("Time taken for epoch {} is {:.4f}s".format(epoch+1, time.time()-start))
