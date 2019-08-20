@@ -22,9 +22,9 @@ from datetime import datetime
 import time
 import matplotlib.pyplot as plt
 import imageio  # generate gifs
-from IPython import display
+#from IPython import display
 import PIL
-import glob
+import glob  # module finds all pathnames matching a specified pattern
 
 import tensorflow as tf
 
@@ -33,8 +33,8 @@ from model import Generator, Discriminator
 
 
 ################################################################################
-# Discriminator Loss
-def disc_loss(real_output, generated_output):
+# Discriminator Loss Function
+def discriminator_loss(real_output, generated_output):
     real_loss = tf.losses.sigmoid_cross_entropy(
         multi_class_labels=tf.ones_like(real_output),
         logits=real_output
@@ -50,8 +50,8 @@ def disc_loss(real_output, generated_output):
     return total_loss
 
 
-# Generator Loss
-def gen_loss(generated_output):
+# Generator Loss Function
+def generator_loss(generated_output):
     generated_loss = tf.losses.sigmoid_cross_entropy(
         multi_class_labels=tf.ones_like(generated_output),
         logits=generated_output
@@ -61,23 +61,25 @@ def gen_loss(generated_output):
 
 
 # Generate and Save Images
-def generate_and_save_images(model, epoch, test_input):
+def generate_and_save_images(model, epoch, test_input, output_dir):
     # set training parameter to False b/c don't want to train batchnorm layer when doing inference
     predictions = model(test_input, training=False)
 
-    fig = plt.figure(figsize=(4, 4))
+    #fig = plt.figure(figsize=(4, 4))
 
     for i in range(predictions.shape[0]):
         plt.subplot(4, 4, i+1),
         plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap="gray")
         plt.axis("off")
 
-    plt.savefig("Epoch {:04d}.png".format(epoch))
+    fig_name = os.path.join(output_dir, "Epoch {:04d}.png".format(epoch))
+    plt.savefig(fig_name)
+    plt.close()
     #plt.show()
 
 
 # Training
-def train(dataset, epochs, noise_dim, d, g):
+def train(dataset, epochs, noise_dim, d, g, output_dir):
     for epoch in range(epochs):
         start = time.time()
 
@@ -91,8 +93,8 @@ def train(dataset, epochs, noise_dim, d, g):
                 real_output = d(images, training=True)
                 generated_output = d(generated_images, training=True)
 
-                g_loss = gen_loss(generated_output)
-                d_loss = disc_loss(real_output, generated_output)
+                g_loss = generator_loss(generated_output)
+                d_loss = discriminator_loss(real_output, generated_output)
 
             g_gradients = g_tape.gradient(g_loss, g.variables)
             d_gradients = d_tape.gradient(d_loss, d.variables)
@@ -101,19 +103,20 @@ def train(dataset, epochs, noise_dim, d, g):
             d_optimizer.apply_gradients(zip(d_gradients, d.variables))
 
         if epoch % 1 == 0:
-            display.clear_output(wait=True)
+            #display.clear_output(wait=True)
 
-            generate_and_save_images(g, epoch+1, random_vector_for_generation)
+            # generate and save image per each epoch
+            generate_and_save_images(g, epoch+1, random_vector_for_generation, output_dir)
 
         # save checkpoint
-        if (epoch+1) % 50 == 0:
+        if (epoch+1) % 1 == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
 
-        print("Time taken for epoch {} is {}s".format(epoch+1, time.time()-start))
+        print("Time taken for epoch {} is {:.4f}s".format(epoch+1, time.time()-start))
 
-    # generate gif after final epoch
-    display.clear_output(wait=True)
-    generate_and_save_images(g, epochs, random_vector_for_generation)
+    # generate and save images after final epoch
+    #display.clear_output(wait=True)
+    generate_and_save_images(g, epochs, random_vector_for_generation, output_dir)
 
 
 # Display an image
@@ -130,10 +133,10 @@ if __name__ == "__main__":
     # print out TF version
     print("TF version: {}".format(tf.__version__))
 
-    # create directory for checkpoints, results
-    dir_name = "Results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name)
+    # create output directory for checkpoints, results, images
+    output_dir = "Results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
@@ -172,7 +175,7 @@ if __name__ == "__main__":
 
     # Checkpoints
     #checkpoint_dir = "./training_checkpoints"
-    checkpoint_dir = os.getcwd()
+    checkpoint_dir = output_dir
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
     checkpoint = tf.train.Checkpoint(
         g_optimizer=g_optimizer,
@@ -185,17 +188,20 @@ if __name__ == "__main__":
     # keep random vector constant for generation to track gan improvement easier
     random_vector_for_generation = tf.random_normal(shape=[NUM_GEN_IMAGES, NOISE_DIM])
 
-    train(train_dataset, NUM_EPOCHS, NOISE_DIM, d, g)
+    # Train function that will save results per epoch
+    train(train_dataset, NUM_EPOCHS, NOISE_DIM, d, g, output_dir)
 
     # Restore latest checkpoint
     checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir=checkpoint_dir))
 
     # Display an image
-    display_image(NUM_EPOCHS)
+    #display_image(NUM_EPOCHS)
 
     # Generate gif of all saved images
-    with imageio.get_writer("dcgan.gif", mode="I") as writer:
-        filenames = glob.glob("Epoch*.png")
+    gif_filename = os.path.join(output_dir, "dcgan.gif")
+    with imageio.get_writer(gif_filename, mode="I") as writer:
+        image_files_pattern = output_dir + "\\Epoch*.png"
+        filenames = glob.glob(image_files_pattern)
         filenames = sorted(filenames)
 
         last = -1
