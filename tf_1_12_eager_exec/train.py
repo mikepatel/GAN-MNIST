@@ -22,8 +22,6 @@ from datetime import datetime
 import time
 import matplotlib.pyplot as plt
 import imageio  # generate gifs
-#from IPython import display
-import PIL
 import glob  # module finds all pathnames matching a specified pattern
 
 import tensorflow as tf
@@ -61,25 +59,24 @@ def generator_loss(generated_output):
 
 
 # Generate and Save Images
-def generate_and_save_images(model, epoch, test_input, output_dir):
+def generate_and_save_images(model, epoch, test_input, save_dir):
     # set training parameter to False b/c don't want to train batchnorm layer when doing inference
     predictions = model(test_input, training=False)
 
-    #fig = plt.figure(figsize=(4, 4))
-
+    # plot 4x4 grid of generated images
     for i in range(predictions.shape[0]):
         plt.subplot(4, 4, i+1),
         plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap="gray")
         plt.axis("off")
 
-    fig_name = os.path.join(output_dir, "Epoch {:04d}.png".format(epoch))
+    # save 4x4 grid of generated images
+    fig_name = os.path.join(save_dir, "Epoch {:04d}.png".format(epoch))
     plt.savefig(fig_name)
     plt.close()
-    #plt.show()
 
 
 # Training
-def train(dataset, epochs, noise_dim, d, g, output_dir):
+def train(dataset, epochs, noise_dim, discriminator, generator, save_dir):
     for epoch in range(epochs):
         start = time.time()
 
@@ -87,41 +84,38 @@ def train(dataset, epochs, noise_dim, d, g, output_dir):
             # generate noise from uniform distribution
             noise = tf.random_normal(shape=[BATCH_SIZE, noise_dim])
 
+            # GradientTape -->
             with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
-                generated_images = g(noise, training=True)
+                # generator
+                generated_images = generator(noise, training=True)
 
-                real_output = d(images, training=True)
+                # discriminator
+                real_output = discriminator(images, training=True)
                 generated_output = d(generated_images, training=True)
 
+                # loss functions
                 g_loss = generator_loss(generated_output)
                 d_loss = discriminator_loss(real_output, generated_output)
 
             g_gradients = g_tape.gradient(g_loss, g.variables)
             d_gradients = d_tape.gradient(d_loss, d.variables)
 
+            #
             g_optimizer.apply_gradients(zip(g_gradients, g.variables))
             d_optimizer.apply_gradients(zip(d_gradients, d.variables))
 
         if epoch % 1 == 0:
-            #display.clear_output(wait=True)
-
             # generate and save image per each epoch
-            generate_and_save_images(g, epoch+1, random_vector_for_generation, output_dir)
+            generate_and_save_images(g, epoch+1, random_vector_for_generation, save_dir)
 
-        # save checkpoint
+        # save checkpoints
         if (epoch+1) % 1 == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
 
         print("Time taken for epoch {} is {:.4f}s".format(epoch+1, time.time()-start))
 
     # generate and save images after final epoch
-    #display.clear_output(wait=True)
-    generate_and_save_images(g, epochs, random_vector_for_generation, output_dir)
-
-
-# Display an image
-def display_image(epoch_number):
-    return PIL.Image.open("Epoch {:04d}.png".format(epoch_number))
+    generate_and_save_images(g, epochs, random_vector_for_generation, save_dir)
 
 
 ################################################################################
@@ -174,7 +168,6 @@ if __name__ == "__main__":
     g_optimizer = tf.train.AdamOptimizer(learning_rate=G_LEARNING_RATE)
 
     # Checkpoints
-    #checkpoint_dir = "./training_checkpoints"
     checkpoint_dir = output_dir
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
     checkpoint = tf.train.Checkpoint(
@@ -193,9 +186,6 @@ if __name__ == "__main__":
 
     # Restore latest checkpoint
     checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir=checkpoint_dir))
-
-    # Display an image
-    #display_image(NUM_EPOCHS)
 
     # Generate gif of all saved images
     gif_filename = os.path.join(output_dir, "dcgan.gif")
@@ -217,11 +207,3 @@ if __name__ == "__main__":
 
             image = imageio.imread(filename)
             writer.append_data(image)
-
-        #image = imageio.imread(filename)
-        #writer.append_data(image)
-
-    # hack to display gif inside notebook
-    #os.system("cp dcgan.gif dcgan.gif.png")
-
-    #display.Image(filename="dcgan.gif.png")
