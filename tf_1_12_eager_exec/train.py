@@ -84,29 +84,30 @@ def train(dataset, epochs, noise_dim, discriminator, generator, save_dir):
             # generate noise from uniform distribution
             noise = tf.random_normal(shape=[BATCH_SIZE, noise_dim])
 
-            # GradientTape -->
+            # GradientTape --> with eager execution, don't have a static graph to calculate gradients
+            # tf.GradientTape --> automatic differentiation
             with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
                 # generator
                 generated_images = generator(noise, training=True)
 
                 # discriminator
                 real_output = discriminator(images, training=True)
-                generated_output = d(generated_images, training=True)
+                generated_output = discriminator(generated_images, training=True)
 
                 # loss functions
                 g_loss = generator_loss(generated_output)
                 d_loss = discriminator_loss(real_output, generated_output)
 
-            g_gradients = g_tape.gradient(g_loss, g.variables)
-            d_gradients = d_tape.gradient(d_loss, d.variables)
+            g_gradients = g_tape.gradient(g_loss, generator.variables)
+            d_gradients = d_tape.gradient(d_loss, discriminator.variables)
 
             #
-            g_optimizer.apply_gradients(zip(g_gradients, g.variables))
-            d_optimizer.apply_gradients(zip(d_gradients, d.variables))
+            g_optimizer.apply_gradients(zip(g_gradients, generator.variables))
+            d_optimizer.apply_gradients(zip(d_gradients, discriminator.variables))
 
         if epoch % 1 == 0:
             # generate and save image per each epoch
-            generate_and_save_images(g, epoch+1, random_vector_for_generation, save_dir)
+            generate_and_save_images(generator, epoch+1, random_vector_for_generation, save_dir)
 
         # save checkpoints
         if (epoch+1) % NUM_EPOCHS == 0:
@@ -115,7 +116,7 @@ def train(dataset, epochs, noise_dim, discriminator, generator, save_dir):
         print("Time taken for epoch {} is {:.4f}s".format(epoch+1, time.time()-start))
 
     # generate and save images after final epoch
-    generate_and_save_images(g, epochs, random_vector_for_generation, save_dir)
+    #generate_and_save_images(generator, epochs, random_vector_for_generation, save_dir)
 
 
 ################################################################################
