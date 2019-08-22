@@ -85,7 +85,7 @@ def train(dataset, epochs, noise_dim, discriminator, generator, save_dir):
             noise = tf.random_normal(shape=[BATCH_SIZE, noise_dim])
 
             # GradientTape --> with eager execution, don't have a static graph to calculate gradients
-            # tf.GradientTape --> automatic differentiation
+            # tf.GradientTape --> automatic differentiation to calculate gradients
             with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
                 # generator
                 generated_images = generator(noise, training=True)
@@ -98,10 +98,11 @@ def train(dataset, epochs, noise_dim, discriminator, generator, save_dir):
                 g_loss = generator_loss(generated_output)
                 d_loss = discriminator_loss(real_output, generated_output)
 
+            # compute gradients recorded on "tape"
             g_gradients = g_tape.gradient(g_loss, generator.variables)
             d_gradients = d_tape.gradient(d_loss, discriminator.variables)
 
-            #
+            # apply gradients to model variables to minimize loss function
             g_optimizer.apply_gradients(zip(g_gradients, generator.variables))
             d_optimizer.apply_gradients(zip(d_gradients, discriminator.variables))
 
@@ -114,9 +115,6 @@ def train(dataset, epochs, noise_dim, discriminator, generator, save_dir):
             checkpoint.save(file_prefix=checkpoint_prefix)
 
         print("Time taken for epoch {} is {:.4f}s".format(epoch+1, time.time()-start))
-
-    # generate and save images after final epoch
-    #generate_and_save_images(generator, epochs, random_vector_for_generation, save_dir)
 
 
 ################################################################################
@@ -186,8 +184,9 @@ if __name__ == "__main__":
     train(train_dataset, NUM_EPOCHS, NOISE_DIM, d, g, output_dir)
 
     # Restore latest checkpoint
-    checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir=checkpoint_dir))
+    #checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir=checkpoint_dir))
 
+    # ----- GENERATION ----- #
     # Generate gif of all saved images
     gif_filename = os.path.join(output_dir, "dcgan.gif")
     with imageio.get_writer(gif_filename, mode="I") as writer:
