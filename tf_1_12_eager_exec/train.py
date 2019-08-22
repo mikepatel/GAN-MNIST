@@ -110,9 +110,11 @@ def train(dataset, epochs, noise_dim, discriminator, generator, save_dir):
             # generate and save image per each epoch
             generate_and_save_images(generator, epoch+1, random_vector_for_generation, save_dir)
 
+        """
         # save checkpoints
         if (epoch+1) % NUM_EPOCHS == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
+        """
 
         print("Time taken for epoch {} is {:.4f}s".format(epoch+1, time.time()-start))
 
@@ -166,6 +168,7 @@ if __name__ == "__main__":
     d_optimizer = tf.train.AdamOptimizer(learning_rate=D_LEARNING_RATE)
     g_optimizer = tf.train.AdamOptimizer(learning_rate=G_LEARNING_RATE)
 
+    """
     # Checkpoints
     checkpoint_dir = output_dir
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
@@ -175,6 +178,7 @@ if __name__ == "__main__":
         g=g,
         d=d
     )
+    """
 
     # ----- TRAINING ----- #
     # keep random vector constant for generation to track gan improvement easier
@@ -183,8 +187,10 @@ if __name__ == "__main__":
     # Train function that will save results per epoch
     train(train_dataset, NUM_EPOCHS, NOISE_DIM, d, g, output_dir)
 
+    """
     # Restore latest checkpoint
-    #checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir=checkpoint_dir))
+    checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir=checkpoint_dir))
+    """
 
     # ----- GENERATION ----- #
     # Generate gif of all saved images
