@@ -1,6 +1,6 @@
 # GAN
 ## Overview
-* Model and training based on [this](https://arxiv.org/pdf/1511.06434.pdf) DCGAN research paper
+* Model and training based on [this DCGAN research paper](https://arxiv.org/pdf/1511.06434.pdf) 
 * Experimenting using TF Eager Execution [environment](https://github.com/mikepatel/GAN-MNIST/tree/master/tf_1_12_eager_exec)
 
 ## Instructions
