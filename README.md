@@ -14,5 +14,5 @@ $ python train.py
 
 | 100 epochs  | 250 epochs  |
 :------------:|:------------:
-![100 epochs](https://github.com/mikepatel/GAN-MNIST/blob/master/tf_1_12_eager_exec/Results/20-08-2019_18-40-09/dcgan.gif) | ![250 epochs](https://github.com/mikepatel/GAN-MNIST/tree/master/tf_1_12_eager_exec/Results/22-08-2019_16-47-01/dcgan.gif)
+![100 epochs](https://github.com/mikepatel/GAN-MNIST/blob/master/tf_1_12_eager_exec/Results/20-08-2019_18-40-09/dcgan.gif) | ![250 epochs](https://github.com/mikepatel/GAN-MNIST/blob/master/tf_1_12_eager_exec/Results/22-08-2019_16-47-01/dcgan.gif)
 
