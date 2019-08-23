@@ -195,14 +195,22 @@ if __name__ == "__main__":
     # ----- GENERATION ----- #
     # Generate gif of all saved images
     gif_filename = os.path.join(output_dir, "dcgan.gif")
-    with imageio.get_writer(gif_filename, mode="I") as writer:
-        image_files_pattern = output_dir + "\\Epoch*.png"
+    image_files_pattern = output_dir + "\\Epoch*.png"
+
+    with imageio.get_writer(gif_filename, mode="I") as writer:  # 'I' for multiple images
         filenames = glob.glob(image_files_pattern)
         filenames = sorted(filenames)
 
+        for f in filenames:
+            image = imageio.imread(f)
+            writer.append_data(image)
+
+        """
         last = -1
 
+        
         for i, filename in enumerate(filenames):
+            
             frame = 2*(i**0.5)
 
             if round(frame) > round(last):
@@ -211,5 +219,7 @@ if __name__ == "__main__":
             else:
                 continue
 
+           
             image = imageio.imread(filename)
             writer.append_data(image)
+        """
