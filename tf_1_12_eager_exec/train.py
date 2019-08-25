@@ -197,13 +197,20 @@ if __name__ == "__main__":
     gif_filename = os.path.join(output_dir, "dcgan.gif")
     image_files_pattern = output_dir + "\\Epoch*.png"
 
-    with imageio.get_writer(gif_filename, mode="I") as writer:  # 'I' for multiple images
-        filenames = glob.glob(image_files_pattern)
-        filenames = sorted(filenames)
+    # collect all individual .png image files
+    filenames = glob.glob(image_files_pattern)
+    filenames = sorted(filenames)
 
+    # write all images to gif
+    with imageio.get_writer(gif_filename, mode="I") as writer:  # 'I' for multiple images
         for f in filenames:
             image = imageio.imread(f)
             writer.append_data(image)
+
+    # Delete individual image files
+    for f in filenames:
+        if f.endswith(".png"):
+            os.remove(f)
 
         """
         last = -1
