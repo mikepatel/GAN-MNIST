@@ -9,3 +9,13 @@ File description:
     For model definitions
 """
 ################################################################################
+import tensorflow as tf
+
+from parameters import *
+
+
+################################################################################
+# Discriminator
+
+
+# Generator
