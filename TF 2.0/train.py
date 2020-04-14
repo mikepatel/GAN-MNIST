@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from parameters import *
-# from model import Discriminator, Generator
+from model import build_discriminator, build_generator
 
 
 ################################################################################
