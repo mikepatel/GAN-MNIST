@@ -79,11 +79,11 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
             # GradientTape
             with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
                 # generator
-                generated_batch = g(noise)
+                generated_batch = g(noise, training=True)
 
                 # discriminator
-                real_output = d(batch)
-                fake_output = d(generated_batch)
+                real_output = d(batch, training=True)
+                fake_output = d(generated_batch, training=True)
 
                 # loss functions
                 g_loss = generator_loss(fake_output)
@@ -144,17 +144,17 @@ if __name__ == "__main__":
         learning_rate=LEARNING_RATE,
         beta_1=BETA_1
     )
+    discriminator.summary()
 
     generator = build_generator()
     generator_optimizer = tf.keras.optimizers.Adam(
         learning_rate=LEARNING_RATE,
         beta_1=BETA_1
     )
-
-    z_gen_input = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
-
-    discriminator.summary()
     generator.summary()
+
+    # ----- TRAINING ----- #
+    z_gen_input = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
 
     train(
         dataset=train_dataset,

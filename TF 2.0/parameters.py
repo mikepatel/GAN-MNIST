@@ -9,13 +9,13 @@ File description:
     For model and training parameters
 """
 ################################################################################
-NUM_EPOCHS = 1
-BATCH_SIZE = 16
+NUM_EPOCHS = 100
+BATCH_SIZE = 64
 
-LEARNING_RATE = 0.0002
-BETA_1 = 0.5
+LEARNING_RATE = 0.0001
+BETA_1 = 0.9  # 0.5
 
-LEAKY_ALPHA = 0.2  # default is 0.3
+LEAKY_ALPHA = 0.3  # default is 0.3
 DROPOUT_RATE = 0.3
 
 IMAGE_WIDTH = 28
