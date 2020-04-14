@@ -24,6 +24,89 @@ from model import build_discriminator, build_generator
 
 
 ################################################################################
+# discriminator loss function
+def discriminator_loss(real_output, fake_output):
+    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+    real_loss = cross_entropy(
+        tf.ones_like(real_output),
+        real_output
+    )
+
+    fake_loss = cross_entropy(
+        tf.zeros_like(fake_output),
+        fake_output
+    )
+
+    total_loss = real_loss + fake_loss
+    return total_loss
+
+
+# generator loss function
+def generator_loss(generated_output):
+    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+    generated_loss = cross_entropy(
+        tf.ones_like(generated_output),
+        generated_output
+    )
+
+    return generated_loss
+
+
+# generate and save images
+def generate_and_save_images(model, epoch, z_input, save_dir):
+    predictions = model(z_input, training=False)
+    predictions = predictions[:16]  # generate 16 images
+
+    for i in range(predictions.shape[0]):
+        plt.subplot(4, 4, i+1)
+        plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap="gray")
+        plt.axis("off")
+
+    fig_name = os.path.join(save_dir, f'Epoch {epoch:04d}')
+    plt.savefig(fig_name)
+    plt.close()
+
+
+# training loop
+def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
+    for e in range(NUM_EPOCHS):
+        for batch in dataset:
+            # generate noise
+            noise = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+
+            # GradientTape
+            with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
+                # generator
+                generated_batch = g(noise)
+
+                # discriminator
+                real_output = d(batch)
+                fake_output = d(generated_batch)
+
+                # loss functions
+                g_loss = generator_loss(fake_output)
+                d_loss = discriminator_loss(real_output, fake_output)
+
+            # compute gradients recorded on "tape"
+            g_gradients = g_tape.gradient(g_loss, g.trainable_variables)
+            d_gradients = d_tape.gradient(d_loss, d.trainable_variables)
+
+            # apply gradients to model variables to minimize loss function
+            g_optimizer.apply_gradients(zip(g_gradients, g.trainable_variables))
+            d_optimizer.apply_gradients(zip(d_gradients, d.trainable_variables))
+
+        # generate sample per epoch
+        generate_and_save_images(
+            model=g,
+            epoch=e+1,
+            z_input=z_input,
+            save_dir=save_dir
+        )
+
+
+################################################################################
 # Main
 if __name__ == "__main__":
     # print TF version
@@ -40,9 +123,15 @@ if __name__ == "__main__":
 
     size_train_dataset = len(train_images)
 
+    # arrays
+    train_images = train_images.astype(np.float32)
+
+    # reshape images
+    train_images = train_images.reshape(train_images.shape[0], 28, 28, 1)
+
     # rescale images from [0, 255] to [-1, 1]
-    train_images = (train_images.astype(np.float32) - 127.5) / 127.5
-    test_images = (test_images.astype(np.float32) - 127.5) / 127.5
+    train_images = (train_images - 127.5) / 127.5
+    #test_images = (test_images.astype(np.float32) - 127.5) / 127.5
 
     # augment data set
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images)
@@ -50,3 +139,29 @@ if __name__ == "__main__":
     train_dataset = train_dataset.batch(batch_size=BATCH_SIZE)
 
     # ----- MODEL ----- #
+    discriminator = build_discriminator()
+    discriminator_optimizer = tf.keras.optimizers.Adam(
+        learning_rate=LEARNING_RATE,
+        beta_1=BETA_1
+    )
+
+    generator = build_generator()
+    generator_optimizer = tf.keras.optimizers.Adam(
+        learning_rate=LEARNING_RATE,
+        beta_1=BETA_1
+    )
+
+    z_gen_input = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+
+    discriminator.summary()
+    generator.summary()
+
+    train(
+        dataset=train_dataset,
+        d=discriminator,
+        g=generator,
+        d_optimizer=discriminator_optimizer,
+        g_optimizer=generator_optimizer,
+        z_input=z_gen_input,
+        save_dir=output_dir
+    )
