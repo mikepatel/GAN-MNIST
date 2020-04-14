@@ -10,9 +10,7 @@ $ python train.py
 ```
 
 ## Results
-* Visualizations Coming Soon!
-
-* Preliminary results:
+Preliminary results:
 
 | 100 epochs  | 250 epochs  |
 :------------:|:------------:
